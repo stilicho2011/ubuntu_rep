@@ -89,7 +89,9 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /home/stilicho/docker/appdata/qbittorrent:/config
       - /mnt/media/torrents:/data
-    restart: unless-stopped 
+    restart: unless-stopped
+    networks:
+      -arr
           
   lidarr:
     container_name: lidarr
