@@ -8,8 +8,8 @@ services:
     ports:
       - 8001:8000
     volumes:
-      - media:/youtube
-      - cache:/cache
+      - /mnt/media/tubarch:/youtube
+      - /mnt/media/tubarch/cache:/cache
     environment:
       - ES_URL=http://archivist-es:9200     # needs protocol e.g. http and port
       - REDIS_HOST=archivist-redis          # don't add protocol

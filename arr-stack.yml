@@ -159,19 +159,6 @@ services:
     networks:
       - arr
 
-  plex:
-    container_name: plex
-    image: plexinc/pms-docker
-        environment:
-      - TZ=Europe/Moscow
-      - PLEX_CLAIM=<claimToken>
-    network_mode: host
-    volumes:
-      - /home/stilicho/docker/torrents/plex/database:/config
-      - /mnt/media/transcode/temp:/transcode
-      - /mnt/media:/data
-    restart: unless-stopped
-
 networks:
   arr:
     external: true
