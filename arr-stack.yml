@@ -120,6 +120,7 @@ services:
       - PGID=1000
       - UMASK=002	
       - TZ=Europe/Moscow
+      - CRON_SCHEDULE: "* * * * *"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /home/stilicho/docker/torrents/recyclarr:/config
@@ -157,6 +158,19 @@ services:
     restart: unless-stopped
     networks:
       - arr
+
+  plex:
+    container_name: plex
+    image: plexinc/pms-docker
+        environment:
+      - TZ=Europe/Moscow
+      - PLEX_CLAIM=<claimToken>
+    network_mode: host
+    volumes:
+      - /home/stilicho/docker/torrents/plex/database:/config
+      - /mnt/media/transcode/temp:/transcode
+      - /mnt/media:/data
+    restart: unless-stopped
 
 networks:
   arr:
