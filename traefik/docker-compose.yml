@@ -22,7 +22,6 @@ services:
       - /home/stilicho/docker/traefik/data/traefik.yml:/traefik.yml:ro
       - /home/stilicho/docker/traefik/data/acme.json:/acme.json
       - /home/stilicho/docker/traefik/data/config.yml:/config.yml:ro
-      - /home/stilicho/docker/traefik/logs:/var/log/traefik
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.entrypoints=http"
