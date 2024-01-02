@@ -15,7 +15,7 @@ services:
       - TZ=Europe/Moscow
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/stilicho/torrents/radarr:/config
+      - /home/stilicho/docker/torrents/radarr:/config
       - /mnt/media:/data
     networks:
       - arr	
@@ -34,7 +34,7 @@ services:
       - TZ=Europe/Moscow
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/stilicho/torrents/sonarr:/config
+      - /home/stilicho/docker/torrents/sonarr:/config
       - /mnt/media:/data
     networks:
       -arr
@@ -52,7 +52,7 @@ services:
       - TZ=Europe/Moscow
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/stilicho/torrents/prowlarr:/config
+      - /home/stilicho/docker/torrents/prowlarr:/config
     networks:
       -arr
 
@@ -70,7 +70,7 @@ services:
       - TZ=Europe/Moscow
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/stilicho/torrents/bazarr:/config
+      - /home/stilicho/docker/torrents/bazarr:/config
       - /mnt/media:/data/media
     networks:
       - arr
@@ -87,8 +87,8 @@ services:
       - TZ=Europe/Moscow
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/stilicho/torrents/qbittorrent:/config
-      - /mnt/media/torrents:/data
+      - /home/stilicho/docker/torrents/qbittorrent:/config
+      - /mnt/media:/data
     restart: unless-stopped
     networks:
       -arr
@@ -105,7 +105,7 @@ services:
         - TZ=Europe/Moscow
     volumes:
         - /etc/localtime:/etc/localtime:ro
-        - /home/stilicho/torrents/lidarr:/config
+        - /home/stilicho/docker/torrents/lidarr:/config
         - /mnt/media:/music
     restart: unless-stopped
     networks:
@@ -123,7 +123,7 @@ services:
       - CRON_SCHEDULE: "* * * * *"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/stilicho/torrents/recyclarr:/config
+      - /home/stilicho/docker/torrents/recyclarr:/config
     networks:
       - arr
 	  
@@ -140,7 +140,7 @@ services:
       - TZ=Europe/Moscow
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/stilicho/torrents/overseerr:/config
+      - /home/stilicho/docker/torrents/overseerr:/config
     restart: unless-stopped
     networks:
       - arr
