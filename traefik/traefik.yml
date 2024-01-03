@@ -22,7 +22,7 @@ providers:
 certificatesResolvers:
   cloudflare:
     acme:
-      email: you@gmail.com
+      email: mail@gmail.com #add your email
       storage: acme.json
       dnsChallenge:
         provider: cloudflare

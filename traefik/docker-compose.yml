@@ -8,37 +8,40 @@ services:
     security_opt:
       - no-new-privileges:true
     networks:
-      - proxy
+       proxy:
     ports:
       - 80:80
       - 443:443
     environment:
-      - CF_API_EMAIL=user@gmail.com
-      - CF_DNS_API_TOKEN=YOUR_API_TOKEN
-      # - CF_API_KEY=YOUR_API_KEY
+      - CF_API_EMAIL=mail@gmail.com
+      - CF_DNS_API_TOKEN=apitoken
+      # - CF_API_KEY=YOU_API_KEY
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /home/stilicho/docker/traefik/data/traefik.yml:/traefik.yml:ro
-      - /home/stilicho/docker/traefik/data/acme.json:/acme.json
-      - /home/stilicho/docker/traefik/data/config.yml:/config.yml:ro
+      - /home/stilicho/docker/traefik/traefik.yml:/traefik.yml:ro
+      - /home/stilicho/docker/traefik/acme.json:/acme.json
+      - /home/stilicho/docker/traefik/config.yml:/config.yml:ro
+      - /home/stilicho/docker/traefik/logs:/var/log/traefik
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.entrypoints=http"
-      - "traefik.http.routers.traefik.rule=Host(`traefik-dashboard.local.example.ru`)"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=USER:BASIC_AUTH_PASSWORD"
+      - "traefik.http.routers.traefik.rule=Host(`traefik-dashboard.stilicho.ru`)"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=user:password"
       - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
       - "traefik.http.routers.traefik-secure.entrypoints=https"
-      - "traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.local.example.ru`)"
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.stilicho.ru`)"
       - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
       - "traefik.http.routers.traefik-secure.tls=true"
       - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].main=local.example.ru"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.local.example.ru"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].main=stilicho.ru"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.stilicho.ru"
       - "traefik.http.routers.traefik-secure.service=api@internal"
+
 
 networks:
   proxy:
+    name: proxy
     external: true
