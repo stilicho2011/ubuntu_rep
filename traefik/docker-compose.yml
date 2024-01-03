@@ -26,18 +26,18 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.entrypoints=http"
-      - "traefik.http.routers.traefik.rule=Host(`traefik-dashboard.stilicho.ru`)"
+      - "traefik.http.routers.traefik.rule=Host(`traefik-dashboard.domain.ru`)"
       - "traefik.http.middlewares.traefik-auth.basicauth.users=user:password"
       - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
       - "traefik.http.routers.traefik-secure.entrypoints=https"
-      - "traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.stilicho.ru`)"
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.domain.ru`)"
       - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
       - "traefik.http.routers.traefik-secure.tls=true"
       - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].main=stilicho.ru"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.stilicho.ru"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].main=domain.ru"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.domain.ru"
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
 
