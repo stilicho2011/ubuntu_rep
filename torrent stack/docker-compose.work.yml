@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.5"
 
 services:
   radarr:
@@ -30,7 +30,7 @@ services:
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"
       - "traefik.docker.network=proxy"
     networks:
-      - proxy	
+      - proxy
     security_opt:
       - no-new-privileges:true
 
@@ -193,8 +193,8 @@ services:
     networks:
         - proxy
     security_opt:
-      - no-new-privileges:true    
-           			
+      - no-new-privileges:true
+
   overseerr:
     container_name: overseerr
     image: ghcr.io/hotio/overseerr:latest
@@ -225,21 +225,7 @@ services:
     networks:
         - proxy
     security_opt:
-      - no-new-privileges:true   
-	   
-  flaresolverr:
-    image: ghcr.io/flaresolverr/flaresolverr:latest
-    container_name: flaresolverr
-    environment:
-      - LOG_LEVEL=${LOG_LEVEL:-info}
-      - LOG_HTML=${LOG_HTML:-false}
-      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
-      - TZ=Europe/Moscow
-    ports:
-      - "${PORT:-8191}:8191"
-    restart: unless-stopped
-    networks:
-      - proxy
+      - no-new-privileges:true
 
 networks:
   proxy:
