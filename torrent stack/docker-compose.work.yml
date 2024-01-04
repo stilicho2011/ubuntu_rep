@@ -176,7 +176,7 @@ services:
     volumes:
         - /etc/localtime:/etc/localtime:ro
         - /home/username_domain/docker/torrents/lidarr:/config
-        - /mnt/media:/music
+        - /mnt/media:/data
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
