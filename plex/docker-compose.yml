@@ -13,8 +13,8 @@ services:
       - VERSION=docker
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/username_domain/docker/plex/database:/config
-      - /home/username_domain/docker/plex/transcode/temp:/transcode
+      - /home/username/docker/plex/database:/config
+      - /home/username/docker/plex/transcode/temp:/transcode
       - /mnt/media:/data
     hostname: plex.example.ru
     ports:
