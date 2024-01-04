@@ -1,0 +1,49 @@
+version: "3"
+services:
+  plex:
+    image: plexinc/pms-docker:latest
+    container_name: plex
+    environment:
+      - TZ=Europe/Moscow
+      - PLEX_CLAIM=claim-xxxxxxxxxxxxxx
+      - ADVERTISE_IP=https://plex.domain.ru:443
+      - PLEX_UID=1000
+      - PLEX_GID=1000
+      - UMASK=002
+      - VERSION=docker
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /home/username_domain/docker/plex/database:/config
+      - /home/username_domain/docker/plex/transcode/temp:/transcode
+      - /mnt/media:/data
+    hostname: plex.example.ru
+    ports:
+     - 32400:32400/tcp
+     - 32400:32400/udp
+     - 3005:3005/tcp
+     - 8324:8324/tcp
+     - 32469:32469/tcp
+     - 1900:1900/udp
+     - 32410:32410/udp
+     - 32412:32412/udp
+     - 32413:32413/udp
+     - 32414:32414/udp
+    restart: unless-stopped
+    networks:
+      proxy:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.plex.entrypoints=http"
+      - "traefik.http.routers.plex.rule=Host(`plex.yourdomain.com`)"
+      - "traefik.http.middlewares.plex-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.plex.middlewares=plex-https-redirect"
+      - "traefik.http.routers.plex-secure.entrypoints=https"
+      - "traefik.http.routers.plex-secure.rule=Host(`plex.yourdomain.com`)"
+      - "traefik.http.routers.plex-secure.tls=true"
+      - "traefik.http.routers.plex-secure.service=plex"
+      - "traefik.http.services.plex.loadbalancer.server.port=32400"
+      - "traefik.docker.network=proxy"
+
+networks:
+  proxy:
+    external: true
