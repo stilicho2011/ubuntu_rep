@@ -8,8 +8,9 @@ services:
       - 9443:9443
       - 9000:9000 # for http
     volumes:
-      - portainer_data:/data
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/username//docker/portainer/data:/data
     restart: unless-stopped
     networks:
       proxy:
@@ -25,8 +26,6 @@ services:
       - "traefik.http.routers.portainer-secure.service=portainer"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
       - "traefik.docker.network=proxy"
-volumes:
-  portainer_data:
 
 networks:
   proxy:
