@@ -194,7 +194,7 @@ services:
         - proxy
     security_opt:
       - no-new-privileges:true    
-           			
+  
   overseerr:
     container_name: overseerr
     image: ghcr.io/hotio/overseerr:latest
@@ -226,7 +226,7 @@ services:
         - proxy
     security_opt:
       - no-new-privileges:true   
-	   
+
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
