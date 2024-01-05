@@ -236,11 +236,24 @@ services:
       - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
       - TZ=Europe/Moscow
     ports:
-      - "${PORT:-8191}:8191"
+      - ${PORT:-8191}:8191
     restart: unless-stopped
     networks:
       - proxy
 
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr
+    container_name: recyclarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=Europe/Moscow
+    user: 1000:1000
+    networks: proxy
+    volumes:
+      - /home/username_domain/docker/torrents/recyclarr/config:/config
+    
 networks:
   proxy:
     external: true
