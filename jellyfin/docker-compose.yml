@@ -1,7 +1,7 @@
 version: "3.5"
 services:
   jellyfin:
-    image: jellyfin/jellyfin
+    image: ghcr.io/hotio/jellyfin
     container_name: jellyfin
     #group_add:
     #  - '109'  # This needs to be the group id of running `stat -c '%g' /dev/dri/renderD128` on the docker host
