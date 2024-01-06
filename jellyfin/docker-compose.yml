@@ -9,8 +9,8 @@ services:
     environment:
       - TZ=Europe/London
     volumes:
-      - /home/stilicho/docker/jellyfin/config:/config
-      - /home/stilicho/docker/jellyfin/cache:/cache
+      - /home/user/docker/jellyfin/config:/config
+      - /home/user/docker/jellyfin/cache:/cache
       - /mnt/media:/media
     #ports: You will need to uncomment if you aren't running through a proxy
     #  - 8096:8096
@@ -24,11 +24,11 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.jellyfin.entrypoints=http"
-      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.stilicho.ru`)"
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.domain.ru`)"
       - "traefik.http.middlewares.jellyfin-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.jellyfin.middlewares=jellyfin-https-redirect"
       - "traefik.http.routers.jellyfin-secure.entrypoints=https"
-      - "traefik.http.routers.jellyfin-secure.rule=Host(`jellyfin.stilicho.ru`)"
+      - "traefik.http.routers.jellyfin-secure.rule=Host(`jellyfin.domain.ru`)"
       - "traefik.http.routers.jellyfin-secure.tls=true"
       - "traefik.http.routers.jellyfin-secure.service=jellyfin"
       - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
