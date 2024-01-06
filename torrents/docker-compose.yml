@@ -111,7 +111,7 @@ services:
     networks:
         - arr
           
-    recyclarr:
+  recyclarr:
     container_name: recyclarr
     image: ghcr.io/recyclarr/recyclarr:latest
     user: 1000:1000
@@ -126,7 +126,7 @@ services:
       - /home/username/torrents/recyclarr:/config
     networks:
       - arr
-	  
+
   overseerr:
     container_name: overseerr
     image: ghcr.io/hotio/overseerr:latest
@@ -144,7 +144,7 @@ services:
     restart: unless-stopped
     networks:
       - arr
-	   
+
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
