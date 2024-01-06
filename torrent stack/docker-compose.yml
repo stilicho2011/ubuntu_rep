@@ -16,16 +16,16 @@ services:
       - TZ=Europe/Moscow
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/username_domain/docker/torrents/radarr:/config
+      - /home/user/docker/torrents/radarr:/config
       - /mnt/media:/data
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.radarr.entrypoints=http"
-      - "traefik.http.routers.radarr.rule=Host(`radarr.username_domain.ru`)"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.user.ru`)"
       - "traefik.http.middlewares.radarr-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.radarr.middlewares=radarr-https-redirect"
       - "traefik.http.routers.radarr-secure.entrypoints=https"
-      - "traefik.http.routers.radarr-secure.rule=Host(`radarr.username_domain.ru`)"
+      - "traefik.http.routers.radarr-secure.rule=Host(`radarr.user.ru`)"
       - "traefik.http.routers.radarr-secure.tls=true"
       - "traefik.http.routers.radarr-secure.service=radarr"
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"
@@ -50,16 +50,16 @@ services:
       - TZ=Europe/Moscow
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/username_domain/docker/torrents/sonarr:/config
+      - /home/user/docker/torrents/sonarr:/config
       - /mnt/media:/data
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.sonarr.entrypoints=http"
-      - "traefik.http.routers.sonarr.rule=Host(`sonarr.username_domain.ru`)"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.user.ru`)"
       - "traefik.http.middlewares.sonarr-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.sonarr.middlewares=sonarr-https-redirect"
       - "traefik.http.routers.sonarr-secure.entrypoints=https"
-      - "traefik.http.routers.sonarr-secure.rule=Host(`sonarr.username_domain.ru`)"
+      - "traefik.http.routers.sonarr-secure.rule=Host(`sonarr.user.ru`)"
       - "traefik.http.routers.sonarr-secure.tls=true"
       - "traefik.http.routers.sonarr-secure.service=sonarr"
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
@@ -82,15 +82,15 @@ services:
       - TZ=Europe/Moscow
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/username_domain/docker/torrents/prowlarr:/config
+      - /home/user/docker/torrents/prowlarr:/config
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prowlarr.entrypoints=http"
-      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.username_domain.ru`)"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.user.ru`)"
       - "traefik.http.middlewares.prowlarr-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.prowlarr.middlewares=prowlarr-https-redirect"
       - "traefik.http.routers.prowlarr-secure.entrypoints=https"
-      - "traefik.http.routers.prowlarr-secure.rule=Host(`prowlarr.username_domain.ru`)"
+      - "traefik.http.routers.prowlarr-secure.rule=Host(`prowlarr.user.ru`)"
       - "traefik.http.routers.prowlarr-secure.tls=true"
       - "traefik.http.routers.prowlarr-secure.service=prowlarr"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
@@ -115,16 +115,16 @@ services:
       - TZ=Europe/Moscow
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/username_domain/docker/torrents/bazarr:/config
+      - /home/user/docker/torrents/bazarr:/config
       - /mnt/media:/data/media
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.bazarr.entrypoints=http"
-      - "traefik.http.routers.bazarr.rule=Host(`bazarr.username_domain.ru`)"
+      - "traefik.http.routers.bazarr.rule=Host(`bazarr.user.ru`)"
       - "traefik.http.middlewares.bazarr-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.bazarr.middlewares=bazarr-https-redirect"
       - "traefik.http.routers.bazarr-secure.entrypoints=https"
-      - "traefik.http.routers.bazarr-secure.rule=Host(`bazarr.username_domain.ru`)"
+      - "traefik.http.routers.bazarr-secure.rule=Host(`bazarr.user.ru`)"
       - "traefik.http.routers.bazarr-secure.tls=true"
       - "traefik.http.routers.bazarr-secure.service=bazarr"
       - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
@@ -146,17 +146,17 @@ services:
       - TZ=Europe/Moscow
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/username_domain/docker/torrents/qbittorrent:/config
+      - /home/user/docker/torrents/qbittorrent:/config
       - /mnt/media:/data
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.qbittorrent.entrypoints=http"
-      - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.username_domain.ru`)"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.user.ru`)"
       - "traefik.http.middlewares.qbittorrent-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.qbittorrent.middlewares=qbittorrent-https-redirect"
       - "traefik.http.routers.qbittorrent-secure.entrypoints=https"
-      - "traefik.http.routers.qbittorrent-secure.rule=Host(`qbittorrent.username_domain.ru`)"
+      - "traefik.http.routers.qbittorrent-secure.rule=Host(`qbittorrent.user.ru`)"
       - "traefik.http.routers.qbittorrent-secure.tls=true"
       - "traefik.http.routers.qbittorrent-secure.service=qbittorrent"
       - "traefik.http.services.qbittorrent.loadbalancer.server.port=10095"
@@ -178,17 +178,17 @@ services:
         - TZ=Europe/Moscow
     volumes:
         - /etc/localtime:/etc/localtime:ro
-        - /home/username_domain/docker/torrents/lidarr:/config
+        - /home/user/docker/torrents/lidarr:/config
         - /mnt/media:/data
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.lidarr.entrypoints=http"
-      - "traefik.http.routers.lidarr.rule=Host(`lidarr.username_domain.ru`)"
+      - "traefik.http.routers.lidarr.rule=Host(`lidarr.user.ru`)"
       - "traefik.http.middlewares.lidarr-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.lidarr.middlewares=lidarr-https-redirect"
       - "traefik.http.routers.lidarr-secure.entrypoints=https"
-      - "traefik.http.routers.lidarr-secure.rule=Host(`lidarr.username_domain.ru`)"
+      - "traefik.http.routers.lidarr-secure.rule=Host(`lidarr.user.ru`)"
       - "traefik.http.routers.lidarr-secure.tls=true"
       - "traefik.http.routers.lidarr-secure.service=lidarr"
       - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
@@ -211,16 +211,16 @@ services:
       - TZ=Europe/Moscow
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/username_domain/docker/torrents/overseerr:/config
+      - /home/user/docker/torrents/overseerr:/config
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.overseerr.entrypoints=http"
-      - "traefik.http.routers.overseerr.rule=Host(`overseerr.username_domain.ru`)"
+      - "traefik.http.routers.overseerr.rule=Host(`overseerr.user.ru`)"
       - "traefik.http.middlewares.overseerr-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.overseerr.middlewares=overseerr-https-redirect"
       - "traefik.http.routers.overseerr-secure.entrypoints=https"
-      - "traefik.http.routers.overseerr-secure.rule=Host(`overseerr.username_domain.ru`)"
+      - "traefik.http.routers.overseerr-secure.rule=Host(`overseerr.user.ru`)"
       - "traefik.http.routers.overseerr-secure.tls=true"
       - "traefik.http.routers.overseerr-secure.service=overseerr"
       - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
@@ -255,7 +255,7 @@ services:
     networks:  
       - proxy
     volumes:
-      - /home/stilicho/docker/torrents/recyclarr/config:/config
+      - /home/user/docker/torrents/recyclarr/config:/config
 
 networks:
   proxy:
