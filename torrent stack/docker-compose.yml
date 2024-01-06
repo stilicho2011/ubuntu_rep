@@ -7,8 +7,8 @@ services:
     restart: unless-stopped
     logging:
       driver: json-file
-    ports:
-      - 7878:7878
+    #ports:  #uncomment if notusing reverse proxy
+    #  - 7878:7878
     environment:
       - PUID=1000
       - PGID=1000
@@ -41,8 +41,8 @@ services:
     restart: unless-stopped
     logging:
       driver: json-file
-    ports:
-      - 8989:8989
+    #ports: #uncomment if not using reverse proxy
+    # - 8989:8989
     environment:
       - PUID=1000
       - PGID=1000
@@ -73,8 +73,8 @@ services:
     container_name: prowlarr
     image: ghcr.io/hotio/prowlarr:latest
     restart: unless-stopped
-    ports:
-      - 9696:9696
+    #ports: #uncomment if not using reverse proxy
+    #  - 9696:9696
     environment:
       - PUID=1000
       - PGID=1000
@@ -106,8 +106,8 @@ services:
     restart: unless-stopped
     logging:
       driver: json-file
-    ports:
-      - 6767:6767
+    #ports: # uncomment if not using reverse proxy
+    #  - 6767:6767
     environment:
       - PUID=1000
       - PGID=1000
@@ -169,8 +169,8 @@ services:
   lidarr:
     container_name: lidarr
     image: ghcr.io/hotio/lidarr:latest
-    ports:
-        - 8686:8686
+   # ports: # uncomment if not using reverse proxy
+   #    - 8686:8686
     environment:
         - PUID=1000
         - PGID=1000
@@ -201,8 +201,8 @@ services:
   overseerr:
     container_name: overseerr
     image: ghcr.io/hotio/overseerr:latest
-    ports:
-      - 5055:5055
+    #ports: # uncomment if not using reverse proxy
+    #  - 5055:5055
     environment:
       - LOG_LEVEL=info
       - PUID=1000
