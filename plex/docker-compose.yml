@@ -19,7 +19,7 @@ services:
       - /home/user/docker/plex/transcode/temp:/transcode
       - /mnt/media:/data
     hostname: subdomain.domain.ru
-   # ports: # uncomment if not using reverse proxy
+   # ports: # uncomment if using reverse proxy
    #  - 32400:32400/tcp
    #  - 32400:32400/udp
    #  - 3005:3005/tcp
