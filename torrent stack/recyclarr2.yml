@@ -6,7 +6,7 @@ recyclarr:
     container_name: recyclarr
     user: 1000:1000
     volumes:
-      - /config/recyclarr:/config
+      - /home/user/docker/torrents/recyclarr:/config
     environment:
       - TZ=Europe/Moscow
     networks:

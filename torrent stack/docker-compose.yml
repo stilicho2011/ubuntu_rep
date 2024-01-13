@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     logging:
       driver: json-file
-    #ports:  #uncomment if notusing reverse proxy
+    #ports:  #uncomment if not using reverse proxy
     #  - 7878:7878
     environment:
       - PUID=1000
