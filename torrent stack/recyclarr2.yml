@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+recyclarr:
+    image: ghcr.io/recyclarr/recyclarr
+    container_name: recyclarr
+    user: 1000:1000
+    volumes:
+      - /config/recyclarr:/config
+    environment:
+      - TZ=Europe/Moscow
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

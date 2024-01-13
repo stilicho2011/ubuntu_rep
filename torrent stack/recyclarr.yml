@@ -1,0 +1,15 @@
+networks:
+  proxy:
+    name: recyclarr
+    external: true
+
+services:
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr
+    container_name: recyclarr
+    user: 1000:1000
+    networks: proxy
+    volumes:
+      - ./config:/config
+    environment:
+      - TZ=Europe/Moscow

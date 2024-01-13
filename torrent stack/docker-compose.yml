@@ -244,19 +244,6 @@ services:
     networks:
       - proxy
 
-  recyclarr:
-    image: ghcr.io/recyclarr/recyclarr
-    container_name: recyclarr
-    environment:
-      - PUID=1000
-      - GUID=1000
-      - UNMASK=002
-      - TZ=Europe/Moscow
-    networks:  
-      - proxy
-    volumes:
-      - /home/user/docker/torrents/recyclarr/config:/config
-
 networks:
   proxy:
     external: true
