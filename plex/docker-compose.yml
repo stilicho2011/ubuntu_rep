@@ -15,8 +15,8 @@ services:
     # - /dev/dri:/dev/dri # for hardware transcoding
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/user/docker/plex/database:/config
-      - /home/user/docker/plex/transcode/temp:/transcode
+      - /home/domain/docker/plex/database:/config
+      - /home/domain/docker/plex/transcode/temp:/transcode
       - /mnt/media:/data
     hostname: subdomain.domain.ru
    # ports: # uncomment if not using reverse proxy
