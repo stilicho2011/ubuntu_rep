@@ -6,11 +6,7 @@ services:
     environment:
       - TZ=Europe/Moscow
       - PLEX_CLAIM=claim-somethingelse
-<<<<<<< HEAD
       - ADVERTISE_IP=https://subdomain.user.ru:443
-=======
-      - ADVERTISE_IP=https://plex.domain.ru:443
->>>>>>> 2754233a768f3954de1f655a74ef46d9632afdbf
       - PLEX_UID=1000
       - PLEX_GID=1000
       - UMASK=002
@@ -22,11 +18,7 @@ services:
       - /home/domain/docker/plex/database:/config
       - /home/domain/docker/plex/transcode/temp:/transcode
       - /mnt/media:/data
-<<<<<<< HEAD
     hostname: subdomain.user.ru
-=======
-    hostname: plex.domain.ru
->>>>>>> 2754233a768f3954de1f655a74ef46d9632afdbf
    # ports: # uncomment if not using reverse proxy
    #  - 32400:32400/tcp
    #  - 32400:32400/udp
@@ -46,19 +38,11 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.plex.entrypoints=http"
-<<<<<<< HEAD
       - "traefik.http.routers.plex.rule=Host(`subdomain.user.ru`)"
       - "traefik.http.middlewares.plex-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.plex.middlewares=plex-https-redirect"
       - "traefik.http.routers.plex-secure.entrypoints=https"
       - "traefik.http.routers.plex-secure.rule=Host(`subdomain.user.ru`)"
-=======
-      - "traefik.http.routers.plex.rule=Host(`plex.domain.ru`)"
-      - "traefik.http.middlewares.plex-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.plex.middlewares=plex-https-redirect"
-      - "traefik.http.routers.plex-secure.entrypoints=https"
-      - "traefik.http.routers.plex-secure.rule=Host(`plex.domain.ru`)"
->>>>>>> 2754233a768f3954de1f655a74ef46d9632afdbf
       - "traefik.http.routers.plex-secure.tls=true"
       - "traefik.http.routers.plex-secure.service=plex"
       - "traefik.http.services.plex.loadbalancer.server.port=32400"

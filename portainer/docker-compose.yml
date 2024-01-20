@@ -3,41 +3,25 @@ services:
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
-<<<<<<< HEAD
-    #ports: #uncomment if using reverse proxy
-=======
-    #ports:     ##uncomment if not using reverse proxy
->>>>>>> 2754233a768f3954de1f655a74ef46d9632afdbf
+    #ports: #uncomment if not using reverse proxy
     #  - 8000:8000
     #  - 9443:9443
     #  - 9000:9000 # for http
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-<<<<<<< HEAD
       - /home/user//docker/portainer/data:/data
-=======
-      - /home/domain//docker/portainer/data:/data
->>>>>>> 2754233a768f3954de1f655a74ef46d9632afdbf
     restart: unless-stopped
     networks:
       proxy:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.portainer.entrypoints=http"
-<<<<<<< HEAD
       - "traefik.http.routers.portainer.rule=Host(`portainer.user.ru`)"
       - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.portainer.middlewares=portainer-https-redirect"
       - "traefik.http.routers.portainer-secure.entrypoints=https"
       - "traefik.http.routers.portainer-secure.rule=Host(`portainer.user.ru`)"
-=======
-      - "traefik.http.routers.portainer.rule=Host(`portainer.domain.ru`)"
-      - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.portainer.middlewares=portainer-https-redirect"
-      - "traefik.http.routers.portainer-secure.entrypoints=https"
-      - "traefik.http.routers.portainer-secure.rule=Host(`portainer.domain.ru`)"
->>>>>>> 2754233a768f3954de1f655a74ef46d9632afdbf
       - "traefik.http.routers.portainer-secure.tls=true"
       - "traefik.http.routers.portainer-secure.service=portainer"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
