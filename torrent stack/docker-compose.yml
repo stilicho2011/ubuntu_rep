@@ -7,7 +7,11 @@ services:
     restart: unless-stopped
     logging:
       driver: json-file
+<<<<<<< HEAD
     #ports:  #uncomment if not using reverse proxy
+=======
+    #ports:  #uncomment if notusing reverse proxy
+>>>>>>> 2754233a768f3954de1f655a74ef46d9632afdbf
     #  - 7878:7878
     environment:
       - PUID=1000
@@ -244,6 +248,22 @@ services:
     networks:
       - proxy
 
+<<<<<<< HEAD
+=======
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr
+    container_name: recyclarr
+    environment:
+      - PUID=1000
+      - GUID=1000
+      - UNMASK=002
+      - TZ=Europe/Moscow
+    networks:  
+      - proxy
+    volumes:
+      - /home/user/docker/torrents/recyclarr/config:/config
+
+>>>>>>> 2754233a768f3954de1f655a74ef46d9632afdbf
 networks:
   proxy:
     external: true

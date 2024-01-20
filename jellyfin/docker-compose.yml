@@ -26,11 +26,19 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.jellyfin.entrypoints=http"
+<<<<<<< HEAD
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.user.ru`)"
       - "traefik.http.middlewares.jellyfin-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.jellyfin.middlewares=jellyfin-https-redirect"
       - "traefik.http.routers.jellyfin-secure.entrypoints=https"
       - "traefik.http.routers.jellyfin-secure.rule=Host(`jellyfin.user.ru`)"
+=======
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.domain.ru`)"
+      - "traefik.http.middlewares.jellyfin-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.jellyfin.middlewares=jellyfin-https-redirect"
+      - "traefik.http.routers.jellyfin-secure.entrypoints=https"
+      - "traefik.http.routers.jellyfin-secure.rule=Host(`jellyfin.domain.ru`)"
+>>>>>>> 2754233a768f3954de1f655a74ef46d9632afdbf
       - "traefik.http.routers.jellyfin-secure.tls=true"
       - "traefik.http.routers.jellyfin-secure.service=jellyfin"
       - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
