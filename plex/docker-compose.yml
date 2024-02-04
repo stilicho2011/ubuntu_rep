@@ -16,7 +16,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /home/user/docker/plex/database:/config
-      - /home/user/docker/plex/transcode/temp:/transcode
+      - /home/user/docker/plex/transcode:/transcode
       - /mnt/media:/data
     hostname: subdomain.user.ru
    # ports: # uncomment if not using reverse proxy
