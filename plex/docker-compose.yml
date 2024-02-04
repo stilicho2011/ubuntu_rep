@@ -12,7 +12,7 @@ services:
       - UMASK=002
       - VERSION=docker
     # devices:
-    # - /dev/dri:/dev/dri # for hardware transcoding
+    # - /dev/dri:/dev/dri # for hardware transcoding intel igpu
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /home/user/docker/plex/database:/config
@@ -33,7 +33,7 @@ services:
     restart: unless-stopped
     networks:
       proxy:
-    runtime: nvidia
+    runtime: nvidia #if you use nvidia for transcoding
     security_opt:
       - no-new-privileges:true
     labels:
