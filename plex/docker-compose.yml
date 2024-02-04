@@ -33,6 +33,7 @@ services:
     restart: unless-stopped
     networks:
       proxy:
+    runtime: nvidia
     security_opt:
       - no-new-privileges:true
     labels:
