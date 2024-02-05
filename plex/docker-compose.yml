@@ -6,7 +6,7 @@ services:
     environment:
       - TZ=Europe/Moscow
       - PLEX_CLAIM=claim-token
-      - ADVERTISE_IP=http://192.168.88.222:32400
+      - ADVERTISE_IP=http://yourip:32400
 	    - NVIDIA_VISIBLE_DEVICES=all #for nvidia transcode
       - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility #for nvidia transcode
       - PLEX_UID=1000
