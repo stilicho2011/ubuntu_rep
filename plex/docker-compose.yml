@@ -5,8 +5,10 @@ services:
     container_name: plex
     environment:
       - TZ=Europe/Moscow
-      - PLEX_CLAIM=claim-somethingelse
-      - ADVERTISE_IP=https://subdomain.user.ru:443
+      - PLEX_CLAIM=claim-token
+      - ADVERTISE_IP=http://192.168.88.222:32400
+	    - NVIDIA_VISIBLE_DEVICES=all #for nvidia transcode
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility #for nvidia transcode
       - PLEX_UID=1000
       - PLEX_GID=1000
       - UMASK=002
@@ -16,11 +18,11 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /home/user/docker/plex/database:/config
-      - /home/user/docker/plex/transcode:/transcode
+      - /dev/shm:/transcode #ram transcoding
       - /mnt/media:/data
     hostname: subdomain.user.ru
-   # ports: # uncomment if not using reverse proxy
-   #  - 32400:32400/tcp
+    ports: # uncomment if not using reverse proxy
+      - 32400:32400/tcp #open if you have problems with local access
    #  - 32400:32400/udp
    #  - 3005:3005/tcp
    #  - 8324:8324/tcp
@@ -39,11 +41,11 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.plex.entrypoints=http"
-      - "traefik.http.routers.plex.rule=Host(`subdomain.user.ru`)"
+      - "traefik.http.routers.plex.rule=Host(`plex.user.ru`)"
       - "traefik.http.middlewares.plex-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.plex.middlewares=plex-https-redirect"
       - "traefik.http.routers.plex-secure.entrypoints=https"
-      - "traefik.http.routers.plex-secure.rule=Host(`subdomain.user.ru`)"
+      - "traefik.http.routers.plex-secure.rule=Host(`plex.user.ru`)"
       - "traefik.http.routers.plex-secure.tls=true"
       - "traefik.http.routers.plex-secure.service=plex"
       - "traefik.http.services.plex.loadbalancer.server.port=32400"
