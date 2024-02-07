@@ -13,7 +13,9 @@ services:
       - "80:80/tcp"
     environment:
       TZ: 'Europe/Moscow'
-      # WEBPASSWORD: 'set a secure password here or it will be random'
+    networks:
+      - proxy:   
+        WEBPASSWORD: 'password'
     # Volumes store your data between container upgrades
     volumes:
       - '/home/user/docker/pihole/:/etc/pihole/'
