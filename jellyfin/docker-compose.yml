@@ -14,7 +14,7 @@ services:
       - /home/user/docker/jellyfin/config:/config
       - /home/user/docker/jellyfin/cache:/cache
       - /mnt/media:/media
-    #ports: You will need to uncomment if you aren't running through a proxy
+    #ports: You will need to uncomment if you aren't running app through a proxy
     #  - 8096:8096
     #  - 8920:8920 #optional
     #  - 7359:7359/udp #optional
