@@ -27,6 +27,8 @@ services
     #cap_add:
     #  - NET_ADMIN
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.pihole.entrypoints=http"

@@ -13,10 +13,12 @@ services:
       - PMM_TEST=False #optional
       - PMM_NO_MISSING=False #optional
     volumes:
-      - /path/to/plex-meta-manager/config:/config
+      - /home/user/docker/plex-meta-manager/config:/config
     restart: unless-stopped
      networks:
       proxy:
+    security_opt:
+      - no-new-privileges:true
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.plex-meta-manager.entrypoints=http"
