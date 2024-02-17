@@ -159,7 +159,7 @@ services:
       - "traefik.http.routers.qbittorrent-secure.rule=Host(`qbittorrent.user.ru`)"
       - "traefik.http.routers.qbittorrent-secure.tls=true"
       - "traefik.http.routers.qbittorrent-secure.service=qbittorrent"
-      - "traefik.http.services.qbittorrent.loadbalancer.server.port=10095"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
       - "traefik.docker.network=proxy"
     networks:
       - proxy
