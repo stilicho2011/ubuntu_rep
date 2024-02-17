@@ -6,7 +6,7 @@ services:
     environment:
       - TRILIUM_DATA_DIR=/home/node/trilium-data
     volumes:
-      - /home/userubuntu/docker/trilium:/home/node/trilium-data
+      - /home/user/docker/trilium:/home/node/trilium-data
     networks:
       proxy:
     labels:
