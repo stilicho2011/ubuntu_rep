@@ -1,1 +1,1 @@
-Here is a coollection ready to use docker compose files 
+Here is a coollection of ready to use docker compose files 
