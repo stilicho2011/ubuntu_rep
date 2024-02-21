@@ -17,6 +17,7 @@ services:
       - 9117:9117 # Lidarr
       - 8686:8686 # Sonarr
       - 9696:9696 # Prowlarr
+      - 5055:5055 # Overseerr
     volumes:
       - /home/user/docker/torrents:/gluetun
     environment:
@@ -234,7 +235,7 @@ services:
       - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
       - "traefik.docker.network=proxy"
     networks:
-        - proxy
+      - proxy
     depends_on:
       - gluetun    
     security_opt:
@@ -268,7 +269,9 @@ services:
       - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
       - "traefik.docker.network=proxy"
     networks:
-        - proxy
+      - proxy
+    depends_on:
+      - gluetun
     security_opt:
       - no-new-privileges:true
 
