@@ -22,7 +22,7 @@ services:
       - /home/user/docker/torrents:/gluetun
     environment:
       # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
-      - VPN_SERVICE_PROVIDER=custom
+      - VPN_SERVICE_PROVIDER=custom   #put you prodiver name regarding gluetun setup manual
       - VPN_TYPE=wireguard
       - VPN_ENDPOINT_IP=1.2.3.4
       - VPN_ENDPOINT_PORT=11111
