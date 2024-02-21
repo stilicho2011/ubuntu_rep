@@ -13,11 +13,11 @@ services:
     ports:
       - 6881:6881
       - 6881:6881/udp
-      - 7878:7878 # Radarr
-      - 9117:9117 # Lidarr
-      - 8686:8686 # Sonarr
-      - 9696:9696 # Prowlarr
-      - 5055:5055 # Overseerr
+    #  - 7878:7878 # Radarr
+    #  - 9117:9117 # Lidarr
+    #  - 8686:8686 # Sonarr
+    #  - 9696:9696 # Prowlarr
+    #  - 5055:5055 # Overseerr
     volumes:
       - /home/user/docker/torrents:/gluetun
     environment:
@@ -39,6 +39,7 @@ services:
   radarr:
     container_name: radarr
     image: ghcr.io/hotio/radarr:latest
+  #  network_mode: "service:gluetun" # uncomment if not using reverse proxy 
     restart: unless-stopped
     logging:
       driver: json-file
@@ -75,6 +76,7 @@ services:
   sonarr:
     container_name: sonarr
     image: ghcr.io/hotio/sonarr:latest
+  #  network_mode: "service:gluetun" # uncomment if not using reverse proxy
     restart: unless-stopped
     logging:
       driver: json-file
@@ -111,6 +113,7 @@ services:
   prowlarr:
     container_name: prowlarr
     image: ghcr.io/hotio/prowlarr:latest
+  # network_mode: "service:gluetun" # uncomment if not using reverse proxy
     restart: unless-stopped
     #ports: #uncomment if not using reverse proxy
     #  - 9696:9696
@@ -210,6 +213,7 @@ services:
   lidarr:
     container_name: lidarr
     image: ghcr.io/hotio/lidarr:latest
+  # network_mode: "service:gluetun" # uncomment if not using reverse proxy
    # ports: # uncomment if not using reverse proxy
    #    - 8686:8686
     environment:
@@ -244,6 +248,7 @@ services:
   overseerr:
     container_name: overseerr
     image: ghcr.io/hotio/overseerr:latest
+  # network_mode: "service:gluetun" # uncomment if not using reverse proxy
     #ports: # uncomment if not using reverse proxy
     #  - 5055:5055
     environment:
