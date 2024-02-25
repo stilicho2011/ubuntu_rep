@@ -9,7 +9,7 @@ services:
       - PUID=1000
       - GUID=1000
       - UNMASK=002
-      - TZ=Europe/London
+      - TZ=Europe/Moscow
     volumes:
       - /home/user/docker/jellyfin/config:/config
       - /home/user/docker/jellyfin/cache:/cache
