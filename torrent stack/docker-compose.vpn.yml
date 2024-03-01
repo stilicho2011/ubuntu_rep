@@ -14,11 +14,11 @@ services:
       - 6881:6881
       - 6881:6881/udp
       - 8888:8888
-      - 7878:7878 # Radarr
-      - 9117:9117 # Lidarr
-      - 8686:8686 # Sonarr
-      - 9696:9696 # Prowlarr
-      - 5055:5055 # Overseerr
+    #  - 7878:7878 # Radarr
+    #  - 9117:9117 # Lidarr
+    #  - 8686:8686 # Sonarr
+    #  - 9696:9696 # Prowlarr
+    #  - 5055:5055 # Overseerr
     volumes:
       - /home/user/docker/torrents:/gluetun
     environment:
