@@ -13,11 +13,12 @@ services:
     ports:
       - 6881:6881
       - 6881:6881/udp
-    #  - 7878:7878 # Radarr
-    #  - 9117:9117 # Lidarr
-    #  - 8686:8686 # Sonarr
-    #  - 9696:9696 # Prowlarr
-    #  - 5055:5055 # Overseerr
+      - 8888:8888
+      - 7878:7878 # Radarr
+      - 9117:9117 # Lidarr
+      - 8686:8686 # Sonarr
+      - 9696:9696 # Prowlarr
+      - 5055:5055 # Overseerr
     volumes:
       - /home/user/docker/torrents:/gluetun
     environment:
@@ -35,6 +36,13 @@ services:
       # Server list updater
       # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
       - UPDATER_PERIOD=24h
+      - HTTPPROXY=on
+      - HTTPPROXY_LOG=on
+      - HTTPPROXY_LISTENING_ADDRESS :8888
+    networks:
+      - proxy
+    security_opt:
+      - no-new-privileges:true
 
   radarr:
     container_name: radarr
