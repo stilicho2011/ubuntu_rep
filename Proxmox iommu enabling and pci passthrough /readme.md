@@ -9,11 +9,16 @@ If you have GRUB edit config file:
 nano /etc/default/grub
 ```
 
-For Intel CPUs Intel CPUs add quiet intel_iommu=on:: 
-`GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on pt=on"`
+For Intel CPUs Intel CPUs add quiet intel_iommu=on: 
+```
+GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on pt=on"
+```
 
 For AMD CPUs add quiet amd_iommu=on:
-`GRUB_CMDLINE_LINUX_DEFAULT="quiet amd_iommu=on pt=on"`
+
+```
+GRUB_CMDLINE_LINUX_DEFAULT="quiet amd_iommu=on pt=on"
+```
 
 Then update GRUB
 `update-grub`
