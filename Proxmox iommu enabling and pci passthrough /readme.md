@@ -4,7 +4,10 @@ use `efibootmgr -v`
 If you see something like “File(\EFI\SYSTEMD\SYSTEMD-BOOTX64.EFI)” then you are using systemd, not GRUB.
 
 If you have GRUB edit config file:
-`nano /etc/default/grub`
+
+```
+nano /etc/default/grub
+```
 
 For Intel CPUs Intel CPUs add quiet intel_iommu=on:: 
 `GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on pt=on"`
