@@ -49,9 +49,10 @@ GPU Isolation From the Host (amend the below to include the IDs of the device yo
 
 Blacklist GPU drivers (here are all that you would ever need)
 
-echo "blacklist radeon" >> /etc/modprobe.d/blacklist.conf 
+```echo "blacklist radeon" >> /etc/modprobe.d/blacklist.conf 
 echo "blacklist nouveau" >> /etc/modprobe.d/blacklist.conf 
 echo "blacklist nvidia" >> /etc/modprobe.d/blacklist.conf 
 echo "blacklist nvidiafb" >> /etc/modprobe.d/blacklist.conf
-echo "blacklist nvidia_drm" >> /etc/modprobe.d/blacklist.conf
+echo "blacklist nvidia_drm" >> /etc/modprobe.d/blacklist.conf```
+
 Reboot 
