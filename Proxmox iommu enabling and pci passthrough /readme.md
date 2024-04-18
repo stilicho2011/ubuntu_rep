@@ -82,3 +82,16 @@ echo "blacklist nvidiafb" >> /etc/modprobe.d/blacklist.conf
 echo "blacklist nvidia_drm" >> /etc/modprobe.d/blacklist.conf
 ```
 Reboot 
+
+Passing HDD
+
+```
+ls -n /dev/disk/by-id/
+```
+then
+```
+/sbin/qm set [VM-ID] -virtio2 /dev/disk/by-id/[DISK-ID]
+```
+
+
+
