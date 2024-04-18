@@ -43,7 +43,8 @@ https://pve.proxmox.com/pve-docs/chapter-qm.html#_general_requirements
 
 Add Modules
 
-```nano /etc/modules
+```
+nano /etc/modules
 ```
 
 Insert
