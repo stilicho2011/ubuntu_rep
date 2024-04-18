@@ -1,3 +1,4 @@
+https://pve.proxmox.com/pve-docs/chapter-qm.html#_general_requirements
 How to determing if you are using grub or cmdline
 use `efibootmgr -v`
 
@@ -39,7 +40,6 @@ proxmox-boot-tool refresh
 ```
 Then reboot
 
-https://pve.proxmox.com/pve-docs/chapter-qm.html#_general_requirements
 
 Add Modules
 
