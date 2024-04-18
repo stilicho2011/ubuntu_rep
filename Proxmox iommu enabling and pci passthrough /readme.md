@@ -21,7 +21,7 @@ GRUB_CMDLINE_LINUX_DEFAULT="quiet amd_iommu=on pt=on"
 ```
 
 Then update GRUB
-`update-grub`
+```update-grub```
 
 If you have cmdline edit config file 
 `nano /etc/kernel/cmdline`
