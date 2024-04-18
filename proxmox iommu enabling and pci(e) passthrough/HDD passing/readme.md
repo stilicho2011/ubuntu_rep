@@ -69,7 +69,7 @@ Verify
 
 GPU Isolation From the Host (amend the below to include the IDs of the device you want to isolate)
 
-Get device IDs: `lspci -nn`
+Get device IDs: ` lspci -nn `
 
 ```
 echo "options vfio-pci ids=10de:____,10de:____ disable_vga=1" > /etc/modprobe.d/vfio.conf
