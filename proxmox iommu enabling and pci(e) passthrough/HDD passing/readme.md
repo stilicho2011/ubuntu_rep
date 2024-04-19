@@ -83,6 +83,7 @@ echo "blacklist nouveau" >> /etc/modprobe.d/blacklist.conf
 echo "blacklist nvidia" >> /etc/modprobe.d/blacklist.conf 
 echo "blacklist nvidiafb" >> /etc/modprobe.d/blacklist.conf
 echo "blacklist nvidia_drm" >> /etc/modprobe.d/blacklist.conf
+echo "blacklist i915" >> /etc/modprobe.d/blacklist.conf
 ```
 Reboot 
 
