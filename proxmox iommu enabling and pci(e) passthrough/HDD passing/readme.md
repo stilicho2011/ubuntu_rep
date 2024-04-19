@@ -75,7 +75,7 @@ Get device IDs: ` lspci -nn `
 echo "options vfio-pci ids=10de:____,10de:____ disable_vga=1" > /etc/modprobe.d/vfio.conf
 ```
 
-Blacklist GPU drivers (here are all that you would ever need)
+Blacklist GPU drivers 
 
 ```
 echo "blacklist radeon" >> /etc/modprobe.d/blacklist.conf 
