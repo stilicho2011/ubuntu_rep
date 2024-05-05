@@ -57,27 +57,30 @@ maxretry = 3
 offdelay = 120
 ondelay = 240
 
-[apc]
-# APC Back-UPS BX1400U-FR
-driver = usbhid-ups
-port = auto
-desc = "APC Back-UPS BX1400U-FR"
-vendorid = 051D
-productid = 0002
-serial = xxxxxxxxxxxx
+[myups]
+        driver = "usbhid-ups"
+        port = "auto"
+        desc = "Cyber Power System, Inc. CP1500 AVR UPS"
+        vendorid = "0764"
+        productid = "0501"
+        product = "BR1000ELCD"
+        vendor = "CPS"
+        bus = "001"
 
 ```
 
 Use the values returned by the nut-scanner command above.
 
 After saving the file, you can test it by entering the command :
-upsdrvctl start
+`upsdrvctl start`
+
 You should get a return like :
-Network UPS Tools - UPS driver controller 2.7.4
+
+`Network UPS Tools - UPS driver controller 2.7.4
 Network UPS Tools - Generic HID driver 0.41 (2.7.4)
 USB communication driver 0.33
-Using subdriver: APC HID 0.96
-Please check the Network UPS Tools – Hardware Compatibility List to identify the correct driver suited for your UPS.
+Using subdriver: APC HID 0.96`
+
 
 Ref : ups.conf(5) and usbhid-ups(8) 
 
