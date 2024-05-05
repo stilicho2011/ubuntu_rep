@@ -216,3 +216,196 @@ FINALDELAY 5
 
 Replace ******** with your own password(s).
 
+
+f) /etc/nut/upssched.conf
+
+Backup /etc/nut/upssched.conf : 
+
+```
+cp /etc/nut/upssched.conf /etc/nut/upssched.example.conf
+```
+
+Edit /etc/nut/upssched.conf :
+
+```
+nano /etc/nut/upssched.conf
+```
+
+Delete all and add :
+```
+CMDSCRIPT /etc/nut/upssched-cmd
+PIPEFN /etc/nut/upssched.pipe
+LOCKFN /etc/nut/upssched.lock
+
+AT ONBATT * START-TIMER onbatt 30
+AT ONLINE * CANCEL-TIMER onbatt online
+AT LOWBATT * EXECUTE onbatt
+AT COMMBAD * START-TIMER commbad 30
+AT COMMOK * CANCEL-TIMER commbad commok
+AT NOCOMM * EXECUTE commbad
+AT SHUTDOWN * EXECUTE powerdown
+AT SHUTDOWN * EXECUTE powerdown
+```
+Be sure PIPEFN and LOCKFN point to a folder that esists, I’ve seen it point to /etc/nut/upssched/ instead of /etc/nut/.
+If it does, create the folder or update these variables. mkdir /etc/nut/upssched/
+
+Ref : upssched.conf(5) https://networkupstools.org/docs/man/upssched.conf.html and TechnoTim https://techno-tim.github.io/posts/NUT-server-guide/
+
+g) /etc/nut/upssched-cmd
+
+(If exists) Backup /etc/nut/upssched-cmd :
+
+```
+cp /etc/nut/upssched-cmd /etc/nut/upssched-cmd.example
+```
+
+Edit /etc/nut/upssched-cmd :
+
+```
+nano /etc/nut/upssched-cmd
+```
+
+(Delete all and) Add :
+```
+#!/bin/sh
+ case $1 in
+       onbatt)
+          logger -t upssched-cmd "UPS running on battery"
+          ;;
+       shutdowncritical)
+          logger -t upssched-cmd "UPS on battery critical, forced shutdown"
+          /usr/sbin/upsmon -c fsd
+          ;;
+       upsgone)
+          logger -t upssched-cmd "UPS has been gone too long, can't reach"
+          ;;
+       *)
+          logger -t upssched-cmd "Unrecognized command: $1"
+          ;;
+ esac
+
+Then :
+
+chmod +x /etc/nut/upssched-cmd
+```
+
+Ref : upssched.conf(5) https://networkupstools.org/docs/man/upssched.conf.html
+
+
+Now reboot your Proxmox server. Or enter the following command sequence to restart the services : 
+```
+service nut-server restart
+service nut-client restart
+systemctl restart nut-monitor
+upsdrvctl stop
+upsdrvctl start
+```
+
+Test your configuration by running the command :
+
+```
+upsc myups@localhost
+```
+
+You should see the UPS replying its data.
+
+Tip : If the above does not work, replace the USB cable and reboot the system once again.
+
+
+DIY HOME SERVER - PROXMOX - NUT Monitoring
+
+Create LXC container. I preffer install Ubuntu OS
+
+a) Install an Apache webserver and nut-cgi :
+```
+apt install apache2 nut-cgi -y
+```
+
+Install NUT client :
+```
+apt install nut-client -y
+```
+
+b) /etc/nut/nut.conf
+
+Backup /etc/nut/nut.conf :
+```
+cp /etc/nut/nut.conf /etc/nut/nut.example.conf
+```
+Edit /etc/nut/nut.conf :
+```
+nano /etc/nut/nut.conf
+```
+Delete all and add :
+`MODE=netclient`
+
+Ref : nut.conf(5)
+
+c) /etc/nut/hosts.conf
+
+Backup /etc/nut/hosts.conf :
+
+```
+cp /etc/nut/hosts.conf /etc/nut/hosts.example.conf
+```
+
+Edit /etc/nut/hosts.conf :
+```
+nano /etc/nut/hosts.conf
+```
+
+Delete all and add :
+`
+MONITOR myups@xxx.xxx.xxx.xxx "name of your ups"
+`
+Replace xxx.xxx.xxx.xxx with the IP address of your Proxmox (NUT) server.
+
+Ref : hosts.conf(5)
+
+d) /etc/nut/upsset.conf
+
+Backup /etc/nut/upsset.conf :
+```
+cp /etc/nut/upsset.conf /etc/nut/upsset.example.conf
+```
+
+Edit /etc/nut/upsset.conf :
+```
+nano /etc/nut/upsset.conf
+```
+
+Delete all and add :
+```
+I_HAVE_SECURED_MY_CGI_DIRECTORY
+```
+Ref : upsset.conf(5)
+
+e) /etc/nut/upsmon.conf
+
+Backup /etc/nut/upsmon.conf : 
+```
+cp /etc/nut/upsmon.conf /etc/nut/upsmon.example.conf
+```
+Edit /etc/nut/upsmon.conf :
+```
+nano /etc/nut/upsmon.conf
+```
+Delete all and add :
+```
+RUN_AS_USER root
+MONITOR myups@xxx.xxx.xxx.xxx 1 upsuser ******* slave
+```
+Replace xxx.xxx.xxx.xxx with the IP address of your Proxmox (NUT) server.
+Replace ******** with your own password(s).
+
+Ref : upsmon.conf(5)
+
+Enter the command :
+`sudo a2enmod cgi`
+
+Then restart the webserver :
+`sudo systemctl restart apache2`
+
+Now test the monitoring. Open a new browser tab and go to the UPS status page :
+
+http://xxx.xxx.xxx.xxx/cgi-bin/nut/upsstats.cgi
