@@ -409,3 +409,23 @@ Then restart the webserver :
 Now test the monitoring. Open a new browser tab and go to the UPS status page :
 
 http://xxx.xxx.xxx.xxx/cgi-bin/nut/upsstats.cgi
+
+
+Testing
+
+a) System shutdown
+
+Now you can test if your system shuts down gracefully.
+In Proxmox, select your PVE node → Shell.
+
+Issue the following command :
+
+`upsmon -c fsd`
+
+Your system should shut down all its subsystems and then shutdown itself.
+
+b) Power outage
+
+Now you are ready to pull the AC power plug going from your AC wall outlet to the UPS.
+At the moment the UPS reaches the values set in battery.runtime.low or battery.charge.low, the shutdown should be initiated.
+
