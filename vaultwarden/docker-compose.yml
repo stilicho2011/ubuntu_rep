@@ -12,11 +12,11 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.vaultwarden.entrypoints=http"
-      - "traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.stilicho.ru`)"
+      - "traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.yourdomainname.ru`)"
       - "traefik.http.middlewares.vaultwarden-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.vaultwarden.middlewares=vaultwarden-https-redirect"
       - "traefik.http.routers.vaultwarden-secure.entrypoints=https"
-      - "traefik.http.routers.vaultwarden-secure.rule=Host(`vaultwarden.stilicho.ru`)"
+      - "traefik.http.routers.vaultwarden-secure.rule=Host(`vaultwarden.yourdomainname.ru`)"
       - "traefik.http.routers.vaultwarden-secure.tls=true"
       - "traefik.http.routers.vaultwarden-secure.service=vaultwarden"
       - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
