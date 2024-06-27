@@ -1,0 +1,43 @@
+version: "3.7"
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:latest # 
+    container_name: mealie
+    #ports:
+    #    - "9925:9000" # 
+    deploy:
+      resources:
+        limits:
+          memory: 1000M # 
+    volumes:
+      - /home/stilicho/docker/mealie/mealie-data:/app/data/
+    environment:
+    # Set Backend ENV Variables Here
+      - ALLOW_SIGNUP=true
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Moscow
+      - MAX_WORKERS=1
+      - WEB_CONCURRENCY=1
+      - BASE_URL=https://mealie.youtdomain.ru
+    restart: unless-stopped
+    networks:
+      proxy:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mealie.entrypoints=http"
+      - "traefik.http.routers.mealie.rule=Host(`mealie.domain.ru`)"
+      - "traefik.http.middlewares.mealie-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.mealie.middlewares=mealie-https-redirect"
+      - "traefik.http.routers.mealie-secure.entrypoints=https"
+      - "traefik.http.routers.mealie-secure.rule=Host(`mealie.domain.ru`)"
+      - "traefik.http.routers.mealie-secure.tls=true"
+      - "traefik.http.routers.mealie-secure.service=mealie"
+      - "traefik.http.services.mealie.loadbalancer.server.port=9000"
+      - "traefik.docker.network=proxy"
+    
+networks:
+  proxy:
+    external: true
