@@ -1,0 +1,29 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/services
+
+- Media:
+    - Truenas:
+        icon: truenas.svg
+        href: http://192.168.88.232
+        description: truenas scale
+        ping: http://192.168.88.232
+        siteMonitor: http://192.168.88.232
+        widget:
+           type: truenas
+           url: http://192.168.88.232
+           username: username
+           password: password
+           enablePools: true # optional, defaults to false
+           nasType: scale
+        
+
+- My Second Group:
+    - My Second Service:
+        href: http://localhost/
+        description: Homepage is the best
+
+- My Third Group:
+    - My Third Service:
+        href: http://localhost/
+        description: Homepage is 😎
