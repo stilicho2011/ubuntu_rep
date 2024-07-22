@@ -1,0 +1,82 @@
+---
+
+services:
+  tubearchivist:
+    container_name: tubearchivist
+    restart: unless-stopped
+    network_mode: "container:gluetun" # uncomment if not using reverse proxy
+    image: bbilly1/tubearchivist:latest
+    #ports:
+    #  - 8057:8000
+    volumes:
+      - /mnt/y_videos:/youtube
+      - /home/stilicho/docker/tubearchivist/cache:/cache
+    environment:
+      - ES_URL=http://localhost:9200     # needs protocol e.g. http and port
+      - REDIS_HOST=localhost          # don't add protocol
+      - HOST_UID=1000
+      - HOST_GID=1000
+      - TA_HOST=tubearchivist.stilicho.ru #:8057         # set your host name
+      - TA_USERNAME=admin           # your initial TA credentials
+      - TA_PASSWORD=password             # your initial TA credentials
+      - ELASTIC_PASSWORD=verysecret         # set password for Elasticsearch
+      - TZ=Europe/Moscow                 # set your time zone
+    depends_on:
+      - archivist-es
+      - archivist-redis
+    #labels:
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.tubearchivist.entrypoints=http"
+    #  - "traefik.http.routers.tubearchivist.rule=Host(`tubearchivist.stilicho.ru`)"
+    #  - "traefik.http.middlewares.tubearchivist-https-redirect.redirectscheme.scheme=https"
+    #  - "traefik.http.routers.tubearchivist.middlewares=tubearchivist-https-redirect"
+    #  - "traefik.http.routers.tubearchivist-secure.entrypoints=https"
+    #  - "traefik.http.routers.tubearchivist-secure.rule=Host(`tubearchivist.stilicho.ru`)"
+    #  - "traefik.http.routers.tubearchivist-secure.tls=true"
+    #  - "traefik.http.routers.tubearchivist-secure.service=tubearchivist"
+    #  - "traefik.http.services.tubearchivist.loadbalancer.server.port=8000"
+    #  - "traefik.docker.network=proxy"
+    #networks:
+    #  - proxy
+    security_opt:
+      - no-new-privileges:true    
+  
+  archivist-redis:
+    image: redis/redis-stack-server
+    container_name: archivist-redis
+    restart: unless-stopped
+    #networks:
+    #  - proxy 
+    network_mode: "container:gluetun" # uncomment if not using reverse proxy
+    #expose:
+    #  - "6379"
+    volumes:
+      - /home/stilicho/docker/tubearchivist/redis:/data
+    depends_on:
+      - archivist-es  
+  
+  archivist-es:
+    image: bbilly1/tubearchivist-es         # only for amd64, or use official es 8.11.0
+    container_name: archivist-es
+    restart: unless-stopped
+    #networks:
+    #  - proxy
+    network_mode: "container:gluetun" # uncomment if not using reverse proxy
+    environment:
+      - "ELASTIC_PASSWORD=verysecret"       # matching Elasticsearch password
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "xpack.security.enabled=true"
+      - "discovery.type=single-node"
+      - "path.repo=/usr/share/elasticsearch/data/snapshot"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /home/stilicho/docker/tubearchivist/es:/usr/share/elasticsearch/data    # check for permission error when using bind mount, see readme
+    #expose:
+    #  - "9200"
+    
+networks:
+  proxy:
+    external: true

@@ -1,0 +1,67 @@
+---
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    # line above must be uncommented to allow external containers to connect.
+    # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md#external-container-to-gluetun
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 6881:6881
+      - 6881:6881/udp
+      - 8888:8888
+      #- 8060:8000 #uncomment if you are using homepage
+      #- 8000:8000 # tubearchivist
+      - 6379:6379 # archivist-redis
+      - 9200:9200 #archivist-elasticsearch 
+    volumes:
+      - /home/stilicho/docker/torrents/gluetun:/gluetun
+    environment:
+      # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=wireguard
+      - VPN_ENDPOINT_IP=1.2.3.4
+      - VPN_ENDPOINT_PORT=51820
+      - WIREGUARD_PUBLIC_KEY=wAUaJMhAq3NFutLHIdF8AN0B5WG8RndfQKLPTEDHal0=
+      - WIREGUARD_PRIVATE_KEY=wOEI9rqqbDwnN8/Bpp22sVz48T71vJ4fYmFWujulwUU=
+      - WIREGUARD_PRESHARED_KEY=xOEI9rqqbDwnN8/Bpp22sVz48T71vJ4fYmFWujulwUU=
+      - WIREGUARD_ADDRESSES=10.64.222.21/32
+      # Timezone for accurate log times
+      - TZ=Europe/Moscow
+      # Server list updater
+      # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
+      - UPDATER_PERIOD=24h
+      - HTTP_CONTROL_SERVER_ADDRESS=:8001 #to avoid conflicts on port 8000
+      - HTTPPROXY=on #if you need httpproxy
+      - HTTPPROXY_LOG=on #if you need httpproxy
+      - HTTPPROXY_LISTENING_ADDRESS :8888 #if you need httpproxy
+    labels:
+      - "traefik.enable=true"
+      #- "traefik.http.routers.gluetun.entrypoints=http"
+      #- "traefik.http.routers.gluetun.rule=Host(`gluetun.stilicho.ru`)"
+      #- "traefik.http.services.gluetun.loadbalancer.server.port=8000"
+      #- "traefik.docker.network=proxy"
+      #  tubearchivist:
+      - "traefik.http.routers.tubearchivist.entrypoints=http"
+      - "traefik.http.routers.tubearchivist.rule=Host(`tubearchivist.stilicho.ru`)"
+      - "traefik.http.middlewares.tubearchivist-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.tubearchivist.middlewares=tubearchivist-https-redirect"
+      - "traefik.http.routers.tubearchivist-secure.entrypoints=https"
+      - "traefik.http.routers.tubearchivist-secure.rule=Host(`tubearchivist.stilicho.ru`)"
+      - "traefik.http.routers.tubearchivist-secure.tls=true"
+      - "traefik.http.routers.tubearchivist-secure.service=tubearchivist"
+      - "traefik.http.services.tubearchivist.loadbalancer.server.port=8000"
+      - "traefik.docker.network=proxy"
+    networks:
+      - proxy
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  proxy:
+    external: true      
