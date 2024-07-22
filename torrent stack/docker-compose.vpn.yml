@@ -21,7 +21,7 @@ services:
     #  - 9696:9696 # Prowlarr
     #  - 5055:5055 # Overseerr
     volumes:
-      - /home/user/docker/torrents:/gluetun
+      - /home/user/docker/torrents/gluetun:/gluetun
     environment:
       # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
       - VPN_SERVICE_PROVIDER=custom   #put you prodiver name regarding gluetun setup manual
