@@ -8,7 +8,7 @@ services:
       VIKUNJA_DATABASE_TYPE: mysql
       VIKUNJA_DATABASE_USER: vikunja
       VIKUNJA_DATABASE_DATABASE: vikunja
-      VIKUNJA_SERVICE_JWTSECRET: какое то значение а соответствии с официальной документацией на сайте (jwt=jwtoken)
+      VIKUNJA_SERVICE_JWTSECRET: какое то значение в соответствии с официальной документацией на сайте (jwt=jwtoken)
     volumes: 
       - ./files:/app/vikunja/files
     networks:
