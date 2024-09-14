@@ -1,0 +1,39 @@
+http:
+  middlewares:
+    crowdsec:
+      plugin:
+        bouncer:
+          enabled: true
+          logLevel: INFO
+          updateIntervalSeconds: 15
+          updateMaxFailure: 0
+          defaultDecisionSeconds: 15
+          httpTimeoutSeconds: 10
+          crowdsecMode: stream
+          crowdsecAppsecEnabled: true
+          crowdsecAppsecHost: crowdsec:7422
+          crowdsecAppsecFailureBlock: true
+          crowdsecAppsecUnreachableBlock: true
+          crowdsecLapiKey: enkkmdwtLllLr24Du3p9vFA78B6li66pXTBWZRo1rm0      # Replace CrowdSec API key (docker exec crowdsec cscli bouncers add crowdsecBouncer)
+#          crowdsecLapiKeyFile: /etc/traefik/cs-privateKey-foo
+          crowdsecLapiHost: crowdsec:8080
+          crowdsecLapiScheme: http
+          forwardedHeadersTrustedIPs:
+            - 172.18.0.0/24                                                            # Reverse Proxy IP address 
+          clientTrustedIPs:
+            - 192.168.0.0/24
+               
+    default-whitelist:
+      ipAllowList:
+        sourceRange:
+        - "10.0.0.0/8"
+        - "192.168.0.0/16"
+        - "172.16.0.0/12"
+
+    secured:
+      chain:
+        middlewares:
+        - default-whitelist
+        - default-headers
+
+  

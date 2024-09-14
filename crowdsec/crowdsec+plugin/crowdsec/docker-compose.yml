@@ -1,0 +1,37 @@
+---
+services:
+  crowdsec:
+    image: crowdsecurity/crowdsec:latest
+    container_name: crowdsec
+    environment:
+      GID: "${GID-1000}"
+      COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules"
+      TZ: Europe/Moscow 
+    volumes:
+      - /home/stilicho/docker/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
+      - /home/stilicho/docker/crowdsec/db:/var/lib/crowdsec/data/
+      - /home/stilicho/docker/crowdsec/config:/etc/crowdsec/
+      - /home/stilicho/docker/traefik/logs:/var/log/traefik/:ro
+    networks:
+      - proxy
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+  #bouncer-traefik:
+  #  image: docker.io/fbonalair/traefik-crowdsec-bouncer:latest
+  #  container_name: bouncer-traefik
+  #  environment:
+  #    CROWDSEC_BOUNCER_API_KEY: #+hKj3QhBIKzYDLHeWYNPuTeV0bJeBBOKoaIFlgkrPsI
+  #    CROWDSEC_AGENT_HOST: crowdsec:8080
+  #  networks:
+  #    - proxy
+  #  depends_on:
+  #    - crowdsec
+  #  restart: unless-stopped
+  #  security_opt:
+  #    - no-new-privileges:true
+
+networks:
+  proxy:
+    external: true
