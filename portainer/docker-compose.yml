@@ -10,7 +10,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /home/user//docker/portainer/data:/data
+      - /home/user/docker/portainer/data:/data
     restart: unless-stopped
     networks:
       proxy:
