@@ -12,6 +12,6 @@ For Decisions :
 docker exec crowdsec cscli decisions list                                                                     # List crowdsec ip decisions
 docker exec crowdsec cscli alerts list 
 
-docker exec crowdsec cscli decisions add --ip 192.168.0.                                                   # add ip to crowdsec decisions block list
+docker exec crowdsec cscli decisions add --ip 192.168.x.x                                                   # add ip to crowdsec decisions block list
 
-docker exec crowdsec cscli decisions delete --ip 192.168.0.                                                # delete ip from crowdsec decisions block list
+docker exec crowdsec cscli decisions delete --ip 192.168.x.x                                                # delete ip from crowdsec decisions block list
