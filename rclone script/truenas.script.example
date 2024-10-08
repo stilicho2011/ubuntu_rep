@@ -9,8 +9,8 @@ After=network-online.target
 Type=notify
 ExecStart=/usr/bin/rclone mount truenas: /media/rclone/truenas \
 #--read-only \
---config /home/stilicho/docker/appdata/rclone/rclone.conf \
---log-file=/home/stilicho/docker/logs/hs/rclone-truenas.log \
+--config /home/stilicho/docker/rclone/rclone.conf \
+--log-file=/home/stilicho/docker/rclone/rclone-truenas.log \
 --log-level NOTICE \
 --allow-other \
 --no-modtime \
