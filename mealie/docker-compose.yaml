@@ -19,7 +19,7 @@ services:
       - TZ=Europe/Moscow
       - MAX_WORKERS=1
       - WEB_CONCURRENCY=1
-      - BASE_URL=https://mealie.youtdomain.ru
+      - BASE_URL=https://mealie.youdomain.ru
     restart: unless-stopped
     networks:
       proxy:
