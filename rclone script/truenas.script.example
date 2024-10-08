@@ -1,0 +1,45 @@
+[Unit]
+Description=Rclone NAS SMB
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+# https://forum.rclone.org/t/some-help-with-rclone-mount-for-plex-buffering-everywhere/18201/23
+# https://forum.rclone.org/t/unable-to-start-rclone-service/32149/7
+Type=notify
+ExecStart=/usr/bin/rclone mount truenas: /media/rclone/truenas \
+#--read-only \
+--config /home/stilicho/docker/appdata/rclone/rclone.conf \
+--log-file=/home/stilicho/docker/logs/hs/rclone-truenas.log \
+--log-level NOTICE \
+--allow-other \
+--no-modtime \
+--umask 002 \
+--user-agent home-server \
+--dir-cache-time 24h \
+--buffer-size 128M \
+--vfs-fast-fingerprint \
+--vfs-cache-mode full \
+--vfs-cache-max-age 336h \
+--cache-dir=/media/ssd/hs/cache/truenas \
+--vfs-cache-max-size 896G \
+--vfs-read-chunk-size-limit 10G \
+--vfs-refresh \
+--rc \
+--rc-web-gui \
+--rc-addr :5572 \
+--rc-web-gui-no-open-browser \
+--rc-no-auth \
+#--rc-user=$RCLONE_WEBUI_USER \
+#--rc-pass=$RCLONE_WEBUI_PASS \
+--use-mmap
+ExecStop=/bin/fusermount -uz /media/rclone/truenas
+ExecStartPost=/usr/bin/rclone rc vfs/refresh recursive=true --rc-addr :5572 _async=true
+Restart=on-abort
+User=stilicho
+Group=stilicho
+KillMode=mixed
+RestartSec=5
+
+[Install]
+WantedBy=default.target
