@@ -57,7 +57,7 @@ services:
       - NEXTCLOUD_HOST=https://your.domain.com
       - NVIDIA_VISIBLE_DEVICES=all
     volumes:
-      - /media/nextcloud:/mnt/ncdata:ro
+      - /media/nextcloud/ncdata:/mnt/ncdata:ro
     runtime: nvidia 
 
 volumes: # If you want to store the data on a different drive, see https://github.com/nextcloud/all-in-one#how-to-store-the-filesinstallation-on-a-separate-drive
