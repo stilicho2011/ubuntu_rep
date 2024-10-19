@@ -48,6 +48,18 @@ services:
   #     - ./sites:/srv
   #   network_mode: "host"
 
+    go-vod:
+    image: radialapps/go-vod
+    restart: always
+    depends_on:
+      - nextcloud-aio-mastercontainer
+    environment:
+      - NEXTCLOUD_HOST=https://your.domain.com
+      - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - /media/nextcloud:/mnt/ncdata:ro
+    runtime: nvidia 
+
 volumes: # If you want to store the data on a different drive, see https://github.com/nextcloud/all-in-one#how-to-store-the-filesinstallation-on-a-separate-drive
   nextcloud_aio_mastercontainer:
     name: nextcloud_aio_mastercontainer # This line is not allowed to be changed as otherwise the built-in backup solution will not work
