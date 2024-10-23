@@ -55,7 +55,7 @@ services:
     depends_on:
       - nextcloud-aio-mastercontainer
     environment:
-      - NEXTCLOUD_HOST=https://next.aetius.ru
+      - NEXTCLOUD_HOST=https://next.domain.ru
       - NVIDIA_VISIBLE_DEVICES=all
     volumes:
       - /media/nextcloud:/mnt/ncdata:ro
