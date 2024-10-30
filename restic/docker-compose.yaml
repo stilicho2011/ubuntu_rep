@@ -1,0 +1,55 @@
+services:
+  backup:
+    image: mazzolino/restic
+    container_name: restic
+    hostname: youtube
+    environment:
+      RUN_ON_STARTUP: "true" # значение можно поменять на false
+      BACKUP_CRON: "30 * * * *"
+      RESTIC_REPOSITORY: /restic
+      RESTIC_PASSWORD: Qp06FbRpUj0vOU
+      RESTIC_BACKUP_SOURCES: /mnt/volumes
+      RESTIC_COMPRESSION: auto
+      RESTIC_BACKUP_ARGS: >-
+        --tag docker-youtube #add tags, whatever you need to mark backups
+        --verbose
+      RESTIC_FORGET_ARGS: >- #меняй как тебе нравится
+        --keep-last 7
+        --keep-daily 5
+        --keep-weekly 1
+        --keep-monthly 12
+      TZ: Europe/Moscow
+    volumes:
+      - /mnt/restic:/restic #куда сохранять backup
+      - /home/stilicho:/tmp-for-restore #куда восстанавливать 
+      - /home/stilicho/docker:/mnt/volumes:ro # что сохранять
+    security_opt:
+      - no-new-privileges:true
+
+  prune:
+    image: mazzolino/restic
+    container_name: restic-prune
+    hostname: youtube
+    environment:
+      RUN_ON_STARTUP: "true"
+      PRUNE_CRON: "0 0 7 * * *"
+      RESTIC_REPOSITORY: /restic
+      RESTIC_PASSWORD: Qp06FbRpUj0vOU
+      TZ: Europe/Moscow
+    security_opt:
+      - no-new-privileges:true
+
+  check:
+    image: mazzolino/restic
+    container_name: restic-check
+    hostname: youtube
+    environment:
+      RUN_ON_STARTUP: "false"
+      CHECK_CRON: "0 15 5 * * *"
+      RESTIC_CHECK_ARGS: >-
+        --read-data-subset=10%
+      RESTIC_REPOSITORY: /restic
+      RESTIC_PASSWORD: Qp06FbRpUj0vOU
+      TZ: Europe/Moscow
+    security_opt:
+      - no-new-privileges:true
