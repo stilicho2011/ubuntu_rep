@@ -1,0 +1,234 @@
+services:
+  
+  #loki:
+  #  container_name: loki
+  #  image: grafana/loki:main
+  #  networks:
+  #    - grafana
+  #  volumes:
+  #    - /home/stilicho/docker/grafana/loki:/etc/loki
+  #  ports:
+  #    - "3100:3100"
+  #  restart: unless-stopped
+  #  command: -config.file=/etc/loki/loki-config.yml
+  
+  #promtail:
+  #  container_name: promtail
+  #  image: grafana/promtail:main
+  #  networks:
+  #    - grafana
+  #  volumes:
+  #    - /var/log:/var/log
+  #    - /home/stilicho/docker/grafana/promtail:/etc/promtail
+  #  ports:
+  #    - "1514:1514" # this is only needed if you are going to send syslogs
+  #  restart: unless-stopped
+  #  command: -config.file=/etc/promtail/promtail-config.yml
+  
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    user: "0"
+    networks:
+      - grafana
+      - proxy
+    volumes:
+    - /home/stilicho/docker/grafana/grafana:/var/lib/grafana
+    restart: unless-stopped
+    depends_on:
+      - influxdb
+    environment:
+      - GF_SECURITY_ADMIN_USER=stilicho
+      - GF_SECURITY_ADMIN_PASSWORD=adminadminadminadminadmin
+      - GF_INSTALL_PLUGINS= #grafana-worldmap-panel
+    links:
+      - influxdb
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.entrypoints=http"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.stilicho.ru`)"
+      #- "traefik.http.routers.grafana.middlewares=default-ipAllowList@file"
+      - "traefik.http.middlewares.grafana-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.grafana.middlewares=grafana-https-redirect"
+      - "traefik.http.routers.grafana-secure.entrypoints=https"
+      - "traefik.http.routers.grafana-secure.rule=Host(`grafana.stilicho.ru`)"
+      - "traefik.http.routers.grafana-secure.tls=true"
+      - "traefik.http.routers.grafana-secure.service=grafana"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.docker.network=proxy"
+  
+  influxdb:
+    container_name: influxdb
+    image: influxdb:latest
+    restart: unless-stopped
+    ports:
+      - 8086:8086
+      - 8089:8089/udp
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_BUCKET=homelab
+      - DOCKER_INFLUXDB_INIT_USERNAME=adminadmin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=adminadmin
+      - DOCKER_INFLUXDB_INIT_ORG=home
+      - TZ=Europe/Moscow
+    networks:
+      - grafana
+    volumes:
+      - /home/stilicho/docker/grafana/influxdb:/var/lib/influxdb2
+  
+  telegraf:
+    container_name: telegraf
+    image: telegraf
+    restart: unless-stopped
+    user: telegraf:988 #you need to find the GID of Docker if not added to Sudo group
+    #entrypoint: /bin/bash -c "chmod 777 /var/run/docker.sock && /entrypoint.sh telegraf"
+    networks:
+      - grafana
+    volumes:
+      - /home/stilicho/docker/grafana/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /:/hostfs:ro # to monitor docker-vm
+      - /var/run/docker.sock:/var/run/docker.sock # to monitor docker containers
+      #- '/home/stilicho/docker/grafana/telegraf/mibs:/usr/share/snmp/mibs' # mibs files
+    ports:
+      - 8125:8125
+    depends_on:
+      - influxdb
+    links:
+      - influxdb
+    environment:
+        - HOST_ETC=/hostfs/etc
+        - HOST_PROC=/hostfs/proc
+        - HOST_SYS=/hostfs/sys
+        - HOST_VAR=/hostfs/var
+        - HOST_RUN=/hostfs/run
+        - HOST_MOUNT_PREFIX=/hostfs
+    
+  #graphite:
+  #  image: graphiteapp/graphite-statsd
+  #  container_name: graphite
+  #  restart: unless-stopped
+  #  ports:
+  #    - 8050:80 # nginx
+  #    - 2003-2004 # carbon receiver - plaintext & pickle
+  #    - 2023-2024 # carbon aggregator - plaintext & pickle
+  #    - 8125:8125/udp # statsd
+  #    - 8126:8126 # statsd admin
+  #  volumes:
+  #    - /home/stilicho/docker/grafana/graphite/configs:/opt/graphite/conf
+  #    - /home/stilicho/docker/grafana/graphite/data:/opt/graphite/storage
+  #    - /home/stilicho/docker/grafana/graphite/statsd_config:/opt/statsd/config
+  #  networks:
+  #    - grafana
+  
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - 9092:9090
+    volumes:
+      - /home/stilicho/docker/grafana/prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - grafana
+
+ # MongoDB: https://hub.docker.com/_/mongo/
+  #mongodb:
+  #  image: "mongo:6.0.18"
+  #  ports:
+  #    - "27017:27017"   
+  #  restart: unless-stopped
+  #  networks:
+  #    - grafana
+  #  volumes:
+  #    - /home/stilicho/docker/grafana/mongodb:/data/db"  
+  #Graylog Data Node: https://hub.docker.com/r/graylog/graylog-datanode
+  #datanode:
+  #  image: "graylog/graylog-datanode:6.1"
+  #  hostname: "datanode"
+  #  environment:
+  #    GRAYLOG_DATANODE_NODE_ID_FILE: "/var/lib/graylog-datanode/node-id"
+  #    GRAYLOG_DATANODE_PASSWORD_SECRET: "somepasswordpepper"
+  #    GRAYLOG_DATANODE_ROOT_PASSWORD_SHA2: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+  #    GRAYLOG_DATANODE_MONGODB_URI: "mongodb://mongodb:27017/graylog"
+  #  ulimits:
+  #    memlock:
+  #      hard: -1
+  #      soft: -1
+  #    nofile:
+  #      soft: 65536
+  #      hard: 65536
+  #  ports:
+  #    - "8999:8999/tcp"   # DataNode API
+  #    - "9201:9200/tcp"
+  #    - "9300:9300/tcp"
+  #  networks:
+  #    - grafana  
+  #  volumes:
+  #    - /home/stilicho/docker/grafana/graylog-datanode:/var/lib/graylog-datanode"
+  #  restart: "on-failure"  
+  # Graylog: https://hub.docker.com/r/graylog/graylog/
+  #graylog:
+  #  hostname: "server"
+  #  image: "graylog/graylog-enterprise:6.1"
+  #  # To install Graylog Open: "graylog/graylog:6.1"
+  #  depends_on:
+  #    mongodb:
+  #      condition: "service_started"
+  #    datanode:
+  #      condition: "service_started"
+  #  entrypoint: "/usr/bin/tini -- /docker-entrypoint.sh"
+  #  environment:
+  #    GRAYLOG_NODE_ID_FILE: "/usr/share/graylog/data/config/node-id"
+  #    GRAYLOG_HTTP_BIND_ADDRESS: "0.0.0.0:9000"
+  #    GRAYLOG_MONGODB_URI: "mongodb://mongodb:27017/graylog"
+      # To make reporting (headless_shell) work inside a Docker container
+  #    GRAYLOG_REPORT_DISABLE_SANDBOX: "true"
+  #    # CHANGE ME (must be at least 16 characters)!
+  #    GRAYLOG_PASSWORD_SECRET: "somepasswordpepper"
+      # Password: "admin"
+  #    GRAYLOG_ROOT_PASSWORD_SHA2: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+  #    GRAYLOG_HTTP_EXTERNAL_URI: "http://127.0.0.1:9000/"
+  #  ports:
+      # Graylog web interface and REST API
+  #    - "9000:9000/tcp"
+      # Beats
+  #    - "5044:5044/tcp"
+      # Syslog TCP
+  #    - "5140:5140/tcp"
+      # Syslog UDP
+  #    - "5140:5140/udp"
+      # GELF TCP
+  #    - "12201:12201/tcp"
+      # GELF UDP
+  #    - "12201:12201/udp"
+      # Forwarder data
+  #    - "13301:13301/tcp"
+      # Forwarder config
+  #    - "13302:13302/tcp"
+  #  restart: "unless-stopped"
+  #  networks:
+  #    - grafana
+  #  volumes:
+  #    - /home/stilicho/docker/grafana/graylog/graylog_data:/usr/share/graylog/data/data"
+  #    - /home/stilicho/docker/grafana/graylog/graylog_config:/usr/share/graylog/data/config"
+  #    - /home/stilicho/docker/grafana/graylog/graylog_journal:/usr/share/graylog/data/journal"
+   
+  #elasticsearch:
+  #  container_name: elasticsearch
+  #  image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2 (версия старая и вообще они от нас закрылись cloudfront-ом)
+  #  volumes:
+  #    - /home/stilicho/docker/grafana/elasticsearch/es_data:/usr/share/elasticsearch/data
+  #  environment:
+  #    - TZ=Europe/Moscow
+  #    - http.host=0.0.0.0
+  #    - transport.host=localhost
+  #    - network.host=0.0.0.0
+  #    - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #  restart: "unless-stopped"
+  #  networks:
+  #    - grafana
+
+networks:
+  grafana:
+  proxy:
+    external: true
