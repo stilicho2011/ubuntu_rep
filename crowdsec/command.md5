@@ -15,3 +15,5 @@ docker exec crowdsec cscli alerts list
 docker exec crowdsec cscli decisions add --ip 192.168.x.x                                                   # add ip to crowdsec decisions block list
 
 docker exec crowdsec cscli decisions delete --ip 192.168.x.x                                                # delete ip from crowdsec decisions block list
+
+* 3 * * * docker exec crowdsec cscli hub update && docker exec crowdsec cscli hub upgrade
