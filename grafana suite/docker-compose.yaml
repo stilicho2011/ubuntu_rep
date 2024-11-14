@@ -41,8 +41,8 @@ services:
       - GF_SECURITY_ADMIN_USER=stilicho
       - GF_SECURITY_ADMIN_PASSWORD=adminadminadminadminadmin
       - GF_INSTALL_PLUGINS= #grafana-worldmap-panel
-    links:
-      - influxdb
+#    links:
+#      - influxdb
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.entrypoints=http"
@@ -93,8 +93,8 @@ services:
       - 8125:8125
     depends_on:
       - influxdb
-    links:
-      - influxdb
+ #   links:
+ #     - influxdb
     environment:
         - HOST_ETC=/hostfs/etc
         - HOST_PROC=/hostfs/proc
