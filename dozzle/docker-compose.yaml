@@ -1,0 +1,43 @@
+---
+services:
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    #ports:
+    #  - 8080:8080
+    #labels: #create custom groups using labels
+    #  - dev.dozzle.group=myapp  
+    environment: 
+      - DOZZLE_ENABLE_ACTIONS=true #Dozzle now supports Container Actions, which allows you to start, stop and restart container from within the UI in the dropdown menu.
+      - DOZZLE_NO_ANALYTICS=true #to disable tracking
+      - TZ=Europe/Moscow
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 3s
+      timeout: 30s
+      retries: 5
+      start_period: 30s  
+    networks:
+      proxy:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dozzle.entrypoints=http"
+      - "traefik.http.routers.dozzle.rule=Host(`dozzle.domain.ru`)"
+      - "traefik.http.middlewares.dozzle-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.dozzle.middlewares=dozzle-https-redirect"
+      - "traefik.http.routers.dozzle-secure.entrypoints=https"
+      - "traefik.http.routers.dozzle-secure.rule=Host(`dozzle.domain.ru`)"
+      - "traefik.http.routers.dozzle-secure.tls=true"
+      - "traefik.http.routers.dozzle-secure.service=dozzle"
+      #- "traefik.http.routers.dozzle-secure.middlewares=middlewares-authentik@file"
+      - "traefik.http.services.dozzle.loadbalancer.server.port=8080"
+      - "traefik.docker.network=proxy"  
+
+networks:
+  proxy:
+    external: true
