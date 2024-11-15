@@ -1,3 +1,6 @@
+docker compose build --pull
+docker compose up -d
+
 docker exec --user www-data -it nextcloud php occ maintenance:repair --include-expensive
 
 docker exec --user www-data -it nextcloud php occ db:add-missing-indices
