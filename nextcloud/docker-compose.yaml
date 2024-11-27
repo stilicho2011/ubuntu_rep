@@ -126,7 +126,7 @@ services:
   #  depends_on:
   #    - nextcloud
   #  environment:
-  #    - NEXTCLOUD_HOST=https://nextcloud.stilicho.ru
+  #    - NEXTCLOUD_HOST=https://nextcloud.вашлюбимыйдоменнавсегда.ru
     # - NEXTCLOUD_ALLOW_INSECURE=1 # (self-signed certs or no HTTPS)
   #    - NVIDIA_VISIBLE_DEVICES=all
     #devices:
