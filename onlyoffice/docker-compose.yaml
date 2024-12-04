@@ -1,0 +1,122 @@
+services:
+  postgres-onlyoffice-document:
+    container_name: onlyoffice-postgresql
+    image: ${ONLYOFFICE_DOCUMENT_POSTGRES_IMAGE_TAG}
+    volumes:
+      - /home/aetius/docker/office/onlyoffice-document-postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${ONLYOFFICE_DOCUMENT_DB_NAME}
+      POSTGRES_USER: ${ONLYOFFICE_DOCUMENT_DB_USER}
+      POSTGRES_HOST_AUTH_METHOD: trust
+    networks:
+      - onlyoffice
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  redis-onlyoffice-document:
+    image: ${ONLYOFFICE_DOCUMENT_REDIS_IMAGE_TAG}
+    container_name: onlyoffice-redis
+    volumes:
+      - /home/aetius/docker/office/redis-onlyoffice-document-data:/data
+    networks:
+      - onlyoffice
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  rabbitmq-onlyoffice-document:
+    image: ${RABBITMQ_IMAGE_TAG}
+    container_name: onlyoffice-rabbitmq
+    volumes:
+      - /home/aetius/docker/office/rabbitmq-onlyoffice-document-data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    networks:
+      - onlyoffice
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 90s
+    restart: unless-stopped
+
+  onlyoffice-document:
+    image: ${ONLYOFFICE_DOCUMENT_IMAGE_TAG}
+    container_name: onlyoffice-server
+    volumes:
+      - /home/aetius/docker/office/onlyoffice-document-data:/var/www/onlyoffice/Data
+      - /home/aetius/docker/office/onlyoffice-document-log:/var/log/onlyoffice
+      - /home/aetius/docker/office/onlyoffice-document-cache-files:/var/lib/onlyoffice/documentserver/App_Data/cache/files
+      - /home/aetius/docker/office/onlyoffice-document-public-files:/var/www/onlyoffice/documentserver-example/public/files
+      - /home/aetius/docker/office/onlyoffice-document-fonts:/usr/share/fonts
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: postgres-onlyoffice-document
+      DB_PORT: 5432
+      DB_NAME: ${ONLYOFFICE_DOCUMENT_DB_NAME}
+      DB_USER: ${ONLYOFFICE_DOCUMENT_DB_USER}
+      DB_PWD: ${ONLYOFFICE_DOCUMENT_DB_PASSWORD}
+      AMQP_TYPE: rabbitmq
+      AMQP_URI: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq-onlyoffice-document
+      REDIS_SERVER_HOST: redis-onlyoffice-document
+      REDIS_SERVER_PORT: 6379
+      JWT_ENABLED: true
+      JWT_SECRET: ${ONLYOFFICE_DOCUMENT_JWT_SECRET}
+      JWT_HEADER: Authorization
+      JWT_IN_BODY: 'true'
+    networks:
+      - onlyoffice
+      - nextcloud
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.onlyoffice-document.entrypoints=http"
+      - "traefik.http.routers.onlyoffice-document.rule=Host(`onlyoffice.aetius.ru`)"
+      - "traefik.http.middlewares.onlyoffice-document-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.onlyoffice-document.middlewares=onlyoffice-document-https-redirect"
+      - "traefik.http.routers.onlyoffice-document-secure.entrypoints=https"
+      - "traefik.http.routers.onlyoffice-document-secure.rule=Host(`onlyoffice.aetius.ru`)"
+      - "traefik.http.routers.onlyoffice-document-secure.tls=true"
+      - "traefik.http.routers.onlyoffice-document-secure.service=onlyoffice-document"
+      - "traefik.http.services.onlyoffice-document.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.onlyoffice-document.middlewares=onlyoffice-document_redirectregex"
+      - "traefik.http.middlewares.onlyoffice-document_redirectregex.redirectregex.permanent=true"
+      - "traefik.http.middlewares.onlyoffice-document_redirectregex.redirectregex.regex=https://(.*)/.well-known/(?:card|cal)dav"
+      - "traefik.http.middlewares.onlyoffice-document_redirectregex.redirectregex.replacement=https://$${1}/remote.php/dav"
+      - "traefik.http.routers.onlyoffice-document-secure.middlewares=onlyoffice-document_redirectregex@docker"
+      - "traefik.http.middlewares.onlyoffice-document-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.onlyoffice-document-secure.middlewares=onlyoffice-document-headers@docker,onlyoffice-document_redirectregex@docker"
+      - "traefik.http.routers.onlyoffice-document.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+      - "traefik.http.middlewares.onlyoffice-document-headers.headers.customRequestHeaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.onlyoffice-document-headers.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.onlyoffice-document-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.onlyoffice-document-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.onlyoffice-document-headers.headers.stsSeconds=15552000" 
+    restart: unless-stopped
+    depends_on:
+      postgres-onlyoffice-document:
+        condition: service_healthy
+      rabbitmq-onlyoffice-document:
+        condition: service_healthy
+
+networks:
+  nextcloud:
+    external: true
+  proxy:
+    external: true 
+  onlyoffice:
+    external: true         
