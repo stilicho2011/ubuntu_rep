@@ -38,15 +38,16 @@ nano /etc/modules
 
 
 Code:
-    # Modules required for PCI passthrough
+
+`    # Modules required for PCI passthrough
     vfio
     vfio_iommu_type1
     vfio_pci
 #    vfio_virqfd
-    # Modules required for Intel GVT
+# Modules required for Intel GVT
     kvmgt
     exngt
-    Vfio-mdev
+    Vfio-mdev`
 
 Execute command:
 Code:
