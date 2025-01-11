@@ -43,8 +43,9 @@ Code:
     vfio
     vfio_iommu_type1
     vfio_pci
-#    vfio_virqfd
-# Modules required for Intel GVT
+#    vfio_virqfd`
+
+`# Modules required for Intel GVT
     kvmgt
     exngt
     Vfio-mdev`
@@ -76,9 +77,11 @@ nano /etc/pve/lxc/<container number>.conf
 ```
 
 Code:
+```
 lxc.cgroup2.devices.allow: c 226:0 rwm
 lxc.cgroup2.devices.allow: c 226:128 rwm
 lxc.mount.entry: /dev/dri/renderD128 dev/dri/renderD128 none bind,optional,create=file
+```
 
 
 On LXC container
