@@ -25,9 +25,9 @@ In the configuration file you'd then add lines to allow the LXC guest access to 
 
 ```
 # /etc/pve/lxc/*.conf
-+ lxc.cgroup.devices.allow: c 226:* rwm
-+ lxc.mount.entry: /dev/dri/card0 dev/dri/card0 none bind,optional,create=file,mode=0666
-+ lxc.mount.entry: /dev/dri/renderD128 dev/dri/renderD128 none bind,optional,create=file
+lxc.cgroup.devices.allow: c 226:* rwm
+lxc.mount.entry: /dev/dri/card0 dev/dri/card0 none bind,optional,create=file,mode=0666
+lxc.mount.entry: /dev/dri/renderD128 dev/dri/renderD128 none bind,optional,create=file
 ```
 
 Allow unprivileged Containers Access
@@ -38,8 +38,8 @@ First you need to give root permission to map the group IDs. You can look in /et
 
 ```
 # /etc/subgid
-+ root:44:1
-+ root:108:1
+root:44:1
+root:108:1
 ```
 
 Then you'll need to create the ID mappings. Since you're just dealing with group mappings the UID mapping can be performed in a single line as shown on the first line addition below. It can be read as "remap 65,536 of the LXC guest namespace UIDs from 0 through 65,536 to a range in the host starting at 100,000." You can tell this relates to UIDs because of the u denoting users. It wasn't necessary to edit /etc/subuid because that file already gives root permission to perform this mapping.
@@ -63,12 +63,12 @@ You have to do the same thing for groups which is the same concept but slightly 
 Because it can get confusing to read I just wanted show each line with some comments...
 
 ```
-+ lxc.idmap: u 0 100000 65536    // map UIDs 0-65536 (LXC namespace) to 100000-165535 (host namespace)
-+ lxc.idmap: g 0 100000 44       // map GIDs 0-43 (LXC namspace) to 100000-100043 (host namespace)
-+ lxc.idmap: g 44 44 1           // map GID  44 to be the same in both namespaces
-+ lxc.idmap: g 45 100045 61      // map GIDs 45-105 (LXC namspace) to 100045-100105 (host namespace)
-+ lxc.idmap: g 106 108 1         // map GID  106 (LXC namspace) to 108 (host namespace)
-+ lxc.idmap: g 107 100107 65429  // map GIDs 107-65536 (LXC namspace) to 100107-165536 (host namespace)
+lxc.idmap: u 0 100000 65536    // map UIDs 0-65536 (LXC namespace) to 100000-165535 (host namespace)
+lxc.idmap: g 0 100000 44       // map GIDs 0-43 (LXC namspace) to 100000-100043 (host namespace)
+lxc.idmap: g 44 44 1           // map GID  44 to be the same in both namespaces
+lxc.idmap: g 45 100045 61      // map GIDs 45-105 (LXC namspace) to 100045-100105 (host namespace)
+lxc.idmap: g 106 108 1         // map GID  106 (LXC namspace) to 108 (host namespace)
+lxc.idmap: g 107 100107 65429  // map GIDs 107-65536 (LXC namspace) to 100107-165536 (host namespace)
 ```
 
 Add root to Groups
