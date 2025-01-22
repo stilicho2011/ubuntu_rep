@@ -48,7 +48,7 @@ Save
 Start the LXC
 Update the LXC user's permissions
 
-``groupadd -g 10000 lxc_shares``
+``groupadd -g 100000 lxc_shares``
 
 Note: I think you can use whatever group name you want as long as you use again in the next step.
 
