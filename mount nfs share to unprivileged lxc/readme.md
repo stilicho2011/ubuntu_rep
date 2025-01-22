@@ -6,16 +6,18 @@ Having learned a lot from Option 2, I decided to attempt to mount an NFS share w
         
         ```
         mkdir /mnt/media
-        
         ```
     
     Edit fstab so that the share mounts automatically on reboot
         Open: 
         
-        ```nano /etc/fstab
+        ```
+        nano /etc/fstab
         ```
         
         Add: 
+        
+
         ```
         your_ip:/mnt/user/downloads/ /mnt/media nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0
         ```
@@ -24,19 +26,25 @@ Having learned a lot from Option 2, I decided to attempt to mount an NFS share w
     
     Mount the share
         Mount shares: 
-        ```mount -a
+        
+        ```
+        mount -a
         ```
         Reload systemd: 
-        ```systemctl daemon-reload
+        
+        ```
+        systemctl daemon-reload
         ```
         
     Add the pointing point to your LXC
-        Open: 
+        Open:
+
         ```
         nano /etc/pve/lxc/101.conf
         ```
         
         Add: 
+        
         ```
         mp0: /mnt/media/,mp=/mnt/media
         ```
