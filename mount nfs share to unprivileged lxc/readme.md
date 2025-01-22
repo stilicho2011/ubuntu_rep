@@ -1,57 +1,48 @@
-Having learned a lot from Option 2, I decided to attempt to mount an NFS share without the Proxmox GUI.
-
-    Access your nodes shell
-        Proxmox > Your Node > Shell
+Access your nodes shell
+``Proxmox > Your Node > Shell``
     
-    Create a mounting point for the share
+Create a mounting point for the share
 
 ```
 mkdir /mnt/media
 ```
 
-
-
-
-    Edit fstab so that the share mounts automatically on reboot
-        Open: 
+Edit fstab so that the share mounts automatically on reboot
+Open: 
         
-        ```
-        nano /etc/fstab
-        ```
+```
+nano /etc/fstab
+```
+Add: 
+```
+your_ip:/mnt/user/downloads/ /mnt/media nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0
+```
         
-        Add: 
-        
-
-        ```
-        your_ip:/mnt/user/downloads/ /mnt/media nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0
-        ```
-        
-        Save
+Save
     
-    Mount the share
-        Mount shares: 
+Mount the share
+Mount shares: 
         
-        ```
-        mount -a
-        ```
-        Reload systemd: 
+```
+mount -a
+```
+Reload systemd: 
+```
+systemctl daemon-reload
+```
         
-        ```
-        systemctl daemon-reload
-        ```
-        
-    Add the pointing point to your LXC
-        Open:
+Add the pointing point to your LXC
+Open:
+```
+nano /etc/pve/lxc/101.conf
+```
 
-        ```
-        nano /etc/pve/lxc/101.conf
-        ```
-        
-        Add: 
-        
-        ```
-        mp0: /mnt/media/,mp=/mnt/media
-        ```
+Add: 
+
+```
+mp0: /mnt/media/,mp=/mnt/media
+```
+
         Save
     
     Start the LXC
