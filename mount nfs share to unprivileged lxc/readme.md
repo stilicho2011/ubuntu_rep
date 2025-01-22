@@ -2,12 +2,16 @@ Having learned a lot from Option 2, I decided to attempt to mount an NFS share w
 
     Access your nodes shell
         Proxmox > Your Node > Shell
-    Create a mounting point for the share
-        
-        ```
-        mkdir /mnt/media
-        ```
     
+    Create a mounting point for the share
+
+```
+mkdir /mnt/media
+```
+
+
+
+
     Edit fstab so that the share mounts automatically on reboot
         Open: 
         
