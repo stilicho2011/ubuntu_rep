@@ -54,3 +54,5 @@ You can also mount it in the LXC with read-only (ro) permissions.
 { echo 'mp0: /mnt/lxc_shares/nas_rwx/,mp=/mnt/nas,ro=1' ; } | tee -a /etc/pve/lxc/LXC_ID.conf
 
 Start the LXC.
+
+https://forum.proxmox.com/threads/tutorial-unprivileged-lxcs-mount-cifs-shares.101795/
