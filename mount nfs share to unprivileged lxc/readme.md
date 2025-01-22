@@ -43,16 +43,18 @@ Add:
 mp0: /mnt/media/,mp=/mnt/media
 ```
 
-        Save
+Save
     
-    Start the LXC
-    Update the LXC user's permissions
-        groupadd -g 10000 lxc_shares
-            Note: I think you can use whatever group name you want as long as you use again in the next step.
-        usermod -aG lxc_shares root
-            Note: Your username is probably root, but substitute for whatever user you want to configure permissions for.
-        Reboot the LXC
-        Verify permissions
-            Create a file in your mountpoint: touch foobar
-            Attempt to delete foobar from another machine.
-            If successful, you should be done.
+Start the LXC
+Update the LXC user's permissions
+groupadd -g 10000 lxc_shares
+Note: I think you can use whatever group name you want as long as you use again in the next step.
+usermod -aG lxc_shares root
+Note: Your username is probably root, but substitute for whatever user you want to configure permissions for.
+Reboot the LXC
+Verify permissions
+Create a file in your mountpoint: touch foobar
+Attempt to delete foobar from another machine.
+If successful, you should be done.
+
+https://forum.proxmox.com/threads/tutorial-mounting-nfs-share-to-an-unprivileged-lxc.138506/
