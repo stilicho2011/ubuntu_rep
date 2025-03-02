@@ -153,5 +153,7 @@ then
 /sbin/qm set [VM-ID] -virtio2 /dev/disk/by-id/[DISK-ID]
 ```
 
-
-
+Disable No-Subscription Pop-Up
+```
+sed -Ezi.bak "s/(Ext.Msg.show\(\{\s+title: gettext\('No valid sub)/void\(\{ \/\/\1/g" /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+```
