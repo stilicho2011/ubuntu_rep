@@ -1,0 +1,52 @@
+api:
+  dashboard: true
+  debug: true
+entryPoints:
+  http:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: https
+          scheme: https
+  https:
+    address: ":443"
+serversTransport:
+  insecureSkipVerify: true
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+  file:
+    directory: /config
+    watch: true
+    #filename: /config.yml
+certificatesResolvers:
+  cloudflare:
+    acme:
+      email: _____________ #add your email
+      storage: acme.json
+      dnsChallenge:
+        provider: cloudflare        
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
+#
+log:
+  level: "INFO"
+  filePath: "/var/log/traefik/traefik.log"
+  noColor: false # Recommended to be true when using common
+  maxSize: 100 # In megabytes
+  compress: true # gzip compression when rotating
+accessLog:
+  addInternals: true
+  filePath: "/var/log/traefik/access.log" 
+  bufferingSize: 100 # Number of log lines
+  fields:
+    names:
+      StartUTC: drop  # Write logs in Container Local Time instead of UTC
+  filters:
+    statusCodes:
+      - "204-299"
+      - "400-499"
+      - "500-599"

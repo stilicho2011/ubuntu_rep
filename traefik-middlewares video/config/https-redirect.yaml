@@ -1,0 +1,13 @@
+################################################################
+# Middlewares 
+# https://doc.traefik.io/traefik/middlewares/http/redirectscheme/
+# Dynamic configuration
+################################################################
+http:
+  middlewares:
+    # Middleware for Redirection
+    # This can be used instead of global redirection
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true

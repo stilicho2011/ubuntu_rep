@@ -1,0 +1,13 @@
+################################################################
+# https://doc.traefik.io/traefik/middlewares/http/buffering/
+# Dynamic configuration
+################################################################
+http:
+  middlewares:
+    middlewares-buffering:
+      buffering:
+        maxRequestBodyBytes: 10485760
+        memRequestBodyBytes: 2097152
+        maxResponseBodyBytes: 10485760
+        memResponseBodyBytes: 2097152
+        retryExpression: "IsNetworkError() && Attempts() <= 2"

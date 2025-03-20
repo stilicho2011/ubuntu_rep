@@ -1,0 +1,204 @@
+http:
+  routers:
+    #
+    nextcloud:
+      entryPoints:
+        - "https"
+      rule: "Host(`nextcloud.stilicho.ru`)"        
+      middlewares:
+        - nextcloud-chain
+      tls: {}
+      service: nextcloud
+    #
+    homepage:
+      entryPoints:
+        - "https"
+      rule: "Host(`homepage.stilicho.ru`)"        
+      middlewares:
+        - default-headers
+        - https-redirect
+        - authentik
+      priority: 10
+      tls: {}
+      service: homepage
+    #homepage-auth:
+    #  rule: "Host(`auth.stilicho.ru`) || HostRegexp(`{subdomain:[a-z0-9]+}.stilicho.ru`) && PathPrefix(`/outpost.goauthentik.io/`)"
+    #  priority: 15
+    #  service: authentik
+    #
+    plex:
+      entryPoints:
+        - "https"
+      rule: "Host(`plex.stilicho.ru`)"        
+      middlewares:
+        - default-headers
+        - https-redirect
+      tls: {}
+      service: plex
+    #
+    jellyfin:
+      entryPoints:
+        - "https"
+      rule: "Host(`jellyfin.stilicho.ru`)"        
+      middlewares:
+        - default-headers
+        - https-redirect
+      tls: {}
+      service: jellyfin
+    #
+    truenas:
+      entryPoints:
+        - "https"
+      rule: "Host(`truenas.stilicho.ru`)"        
+      middlewares:
+        - default-headers
+        - https-redirect
+      tls: {}
+      service: truenas
+    #
+    cockpit:
+      entryPoints:
+        - "https"
+      rule: "Host(`cockpit.stilicho.ru`)"        
+      middlewares:
+        - default-headers
+        - https-redirect
+        - authentik
+      #priority: 10  
+      tls: {}
+      service: cockpit
+    #
+    pihole:
+      entryPoints:
+        - "https"
+      rule: "Host(`pihole.stilicho.ru`)"
+      middlewares:
+        - redirectregex-pihole
+        - default-headers
+        - addprefix-pihole
+        - https-redirectscheme
+        - authentik
+      priority: 10
+      tls: {}
+      service: pihole
+    #
+    immich:
+      entryPoints:
+        - "https"
+      rule: "Host(`immich.stilicho.ru`)"        
+      middlewares:
+        - default-headers
+        - https-redirect
+      tls: {}
+      service: immich
+    #
+ #end region
+  services:
+    #
+    plex:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.0.1:32400"
+        passHostHeader: true    
+    #
+    jellyfin:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.01.58:8096"
+        passHostHeader: true
+    #
+    nextcloud:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.01.67:8081"
+        passHostHeader: true
+    #
+    homepage:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.01.157:3000"
+        passHostHeader: true
+    #
+    cockpit:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.01.157:9090"
+        passHostHeader: true
+    #
+    truenas:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.01.999"
+        passHostHeader: true  
+    #
+    pihole:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.01.987:80"
+        passHostHeader: true      
+#
+    immich:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.01.789:2283"
+        passHostHeader: true  
+  #end region
+  middlewares:
+    # Middleware for Redirection
+    # This can be used instead of global redirection
+    crowdsec:
+      plugin:
+        bouncer:
+          enabled: true
+          logLevel: INFO
+          updateIntervalSeconds: 15
+          updateMaxFailure: 0
+          defaultDecisionSeconds: 15
+          httpTimeoutSeconds: 10
+          crowdsecMode: stream
+          crowdsecAppsecEnabled: true
+          crowdsecAppsecHost: crowdsec:7422
+          crowdsecAppsecFailureBlock: true
+          crowdsecAppsecUnreachableBlock: true
+          crowdsecLapiKey: ____________________________ # Replace CrowdSec API key (docker exec crowdsec cscli bouncers add crowdsecBouncer)
+          crowdsecLapiHost: crowdsec:8080
+          crowdsecLapiScheme: http
+          forwardedHeadersTrustedIPs:
+            - 10.0.0.0/8
+            - 172.16.0.0/12
+            - 192.168.0.0/16                                                        
+          clientTrustedIPs:
+            - 10.0.0.0/8
+            - 172.16.0.0/12
+            - 192.168.0.0/16
+  
+  #
+    cloudflarewarp:                                                                      
+      plugin:                                                                            
+        cloudflarewarp:                                                                  
+          disableDefault: false                                                          
+          trustip:                                                                       
+            - "2400:cb00::/32"
+  #
+    gzip:
+      compress: {}
+  #  
+    default-headers:
+      headers:
+        frameDeny: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        customFrameOptionsValue: SAMEORIGIN
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+  #
+    secured:
+      chain:
+        middlewares:
+        - default-whitelist
+        - default-headers
+     
