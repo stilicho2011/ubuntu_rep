@@ -4,10 +4,13 @@ services:
   diun:
     image: crazymax/diun:latest
     container_name: diun
-    command: serve
+    command: serve #comment if using podman
+    # security_opt is neccessary if you use podman in rootless mode to apply the correct SELinux rules
+    #security_opt:
+    #  - "label=type:container_runtime_t"
     volumes:
       - "/home/stilicho/docker/diun/data:/data"
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/var/run/docker.sock:/var/run/docker.sock" #/run/podman/podman.sock instead var/run/docker.sock if using podman
     environment:
       - "TZ=Europe/Moscow"
       - "LOG_LEVEL=info"
@@ -25,7 +28,6 @@ services:
       - "DIUN_NOTIF_GOTIFY_TOKEN=ABCDEFGHHGJHG" # get your token from Gotify UI
       - "DIUN_NOTIF_GOTIFY_PRIORITY=1"
       - "DIUN_NOTIF_GOTIFY_TIMEOUT=10s"
-
     labels:
       - "diun.enable=true"
     restart: always
