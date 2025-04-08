@@ -133,6 +133,7 @@ services:
     #  - /dev/dri:/dev/dri # VA-API (omit for NVENC)
   #  volumes:
   #    - /home/stilicho/docker/nextcloud/custom_apps:/var/www/html/custom_apps:ro
+  #    - /mnt/nextcloud:/var/www/html/custom_apps:ro ##must watch needed directory outside container 
   ##  runtime: nvidia #(NVENC)
   #  networks:
   #    - nextcloud  
