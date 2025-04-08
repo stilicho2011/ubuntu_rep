@@ -1,0 +1,5 @@
+1. Update and Upgrade the Ubuntu Packages
+
+```apt update && apt upgrade -y
+```
+
