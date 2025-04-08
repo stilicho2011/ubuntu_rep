@@ -1,8 +1,7 @@
 1. Update and Upgrade the Ubuntu Packages:
 
-```
-apt update && apt upgrade -y
-```
+```apt update && apt upgrade -y```
+
 
 2. Install Apache2:
 
