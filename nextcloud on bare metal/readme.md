@@ -9,13 +9,13 @@ sudo apt update && sudo apt upgrade -y
 2. Install Apache2:
 
 ```
-apt install apache2 -y
+sudo apt install apache2 -y
 ```
 
 3. Install dependencies:
 
 ```
-apt install php php-common libapache2-mod-php php-bz2 php-gd php-mysql \
+sudo apt install php php-common libapache2-mod-php php-bz2 php-gd php-mysql \
 php-curl php-mbstring php-imagick php-zip php-common php-curl php-xml \
 php-json php-bcmath php-xml php-intl php-gmp zip unzip wget -y
 ```
@@ -35,8 +35,8 @@ a2enmod env rewrite dir mime headers setenvif ssl
 6. Now, Restart, Enable and Check Apache is Running Properly.
 
 ```
-systemctl restart apache2
-systemctl enable apache2
+sudo systemctl restart apache2
+sudo systemctl enable apache2
 ```
 
 7. Check modules are loaded on Apache (Output omitted):
@@ -48,7 +48,7 @@ apache2ctl -M
 8. Install mariadb-server package:
 
 ```
-apt install mariadb-server -y
+sudo apt install mariadb-server -y
 ```
 
 9. Login to MariaDB, Just type the below command, It will drop you to MySQL Prompt:
@@ -62,34 +62,34 @@ mysql
 11. Now, restart and enable MariaDB service:
 
 ```
-systemctl restart mariadb
-systemctl enable mariadb
+sudo systemctl restart mariadb
+sudo systemctl enable mariadb
 ```
 
 12. Check MariaDB is Running:
 
 ```
-systemctl status mariadb
+sudo systemctl status mariadb
 ```
 
 13. Download and unzip in the /var/www/html folder:
 
 ```
 cd /var/www/html
-wget https://download.nextcloud.com/server/releases/latest.zip
-unzip latest.zip
+sudo wget https://download.nextcloud.com/server/releases/latest.zip
+sudo unzip latest.zip
 ```
 
 14. Remove the zip file, which is not necessary now:
 
 ```
-rm -rf latest.zip
+sudo rm -rf latest.zip
 ```
 
 15. Change the ownership of the nextcloud directory to the HTTP user:
 
 ```
-chown -R www-data:www-data /var/www/html/nextcloud/
+sudo chown -R www-data:www-data /var/www/html/nextcloud/
 ```
 
 16. Run the below command to install nextcloud (provide your own credentials)
@@ -104,7 +104,7 @@ sudo -u www-data php occ  maintenance:install --database \
 17. Nextcloud allows access only from localhost, it could through error “Access through untrusted domain”. we need to allow accessing Nextcloud by using ip or domain name:
 
 ```
-nano /var/www/html/nextcloud/config/config.php
+sudo nano /var/www/html/nextcloud/config/config.php
 
   'trusted_domains' =>
   array (
@@ -117,7 +117,7 @@ nano /var/www/html/nextcloud/config/config.php
 18. Configure Apache to load Nextcloud from the /var/www/html/nextcloud folder:
 
 ```
-nano /etc/apache2/sites-enabled/000-default.conf
+sudo nano /etc/apache2/sites-enabled/000-default.conf
 
 <VirtualHost *:80>
         ServerAdmin webmaster@localhost
@@ -137,7 +137,7 @@ nano /etc/apache2/sites-enabled/000-default.conf
 19. Now restart Apache:
 
 ```
-systemctl restart apache2
+sudo systemctl restart apache2
 ```
 
 20. Now, Go to the Browser and type http://[ip or fqdn] of the server, The below Nextcloud login page will appear.
@@ -145,7 +145,7 @@ systemctl restart apache2
 21. Install PHP-FPM: #check actual version
 
 ```
-apt install php8.4-fpm 
+sudo apt install php8.4-fpm 
 ```
 
 22. Check the PHP-FPM is running, its version and Socket is created:
@@ -173,7 +173,7 @@ a2enconf php8.4-fpm
 25. Restart Apache to reload all the modules and configurations:
 
 ```
-systemctl restart apache2
+sudo systemctl restart apache2
 ```
 
 Now, for file upload size and performance settings, we need to tweak some php.ini settings listed below in the /etc/php/8.4/fpm/php.ini file. You can assign your own values depending on your environment.
@@ -237,7 +237,7 @@ Now, Insert the below code to apache’s default site configuration file /etc/ap
 31. After providing the code, apache’s default site configuration will look like the below snippet:
 
 ```
-nano /etc/apache2/sites-enabled/000-default.conf 
+sudo nano /etc/apache2/sites-enabled/000-default.conf 
 ```
 ```
 <VirtualHost *:80>
@@ -264,7 +264,7 @@ nano /etc/apache2/sites-enabled/000-default.conf
 32. Now, Restart Apache to take the change:
 
 ```
-systemctl restart apache2
+sudo systemctl restart apache2
 ```
 
 33. Create info.php Page for PHP feature check:
@@ -276,7 +276,7 @@ cd /var/www/html/nextcloud
 `
 
 ```
-nano info.php
+sudo nano info.php
 ```
 ```
     <?php phpinfo(); ?>
@@ -291,7 +291,7 @@ Check it is running or not from the [URL]/info.php file previously we created.
 Opcache JIT (Just-In-Time) compilation is an important feature. JIT compilation improves PHP performance by compiling code into machine language at runtime, rather than interpreting it each time it’s executed. This can significantly enhance the performance of CPU-intensive tasks. So it will be very effective to enable it to increase nextcloud performance.
 
 ```
-nano /etc/php/8.4/fpm/conf.d/10-opcache.ini
+sudo nano /etc/php/8.4/fpm/conf.d/10-opcache.ini
 
 zend_extension=opcache.so
 opcache.enable_cli=1
@@ -309,11 +309,11 @@ service php8.4-fpm restart
 36. Enable APCu in PHP:
 
 ```
-apt install php8.4-apcu
+sudo apt install php8.4-apcu
 ```
 
 ```
-nano /etc/php/8.4/fpm/conf.d/20-apcu.ini
+sudo nano /etc/php/8.4/fpm/conf.d/20-apcu.ini
 ```
 
 ```
@@ -324,8 +324,8 @@ apc.enable_cli=1
 Now, Restart PHP-FPM and Apache
 
 ```
-systemctl restart php8.3-fpm
-systemctl restart apache2
+sudo systemctl restart php8.3-fpm
+sudo systemctl restart apache2
 ```
 
 Now, Check the [URL]/info.php again, it will show the “APCu support Enabled”
@@ -333,7 +333,7 @@ Now, Check the [URL]/info.php again, it will show the “APCu support Enabled”
 37. Configure Nextcloud to use APCu for memory caching:
 
 ```
-nano /var/www/html/nextcloud/config/config.php
+sudo nano /var/www/html/nextcloud/config/config.php
 ```
 
 ```
@@ -347,7 +347,7 @@ In Nextcloud, Redis is used for local and distributed caching as well as transac
 38. Install Redis Server and Redis php extension
 
 ```
-apt install redis-server php-redis -y
+sudo apt install redis-server php-redis -y
 ```
 
 
@@ -361,7 +361,7 @@ systemctl enable redis-server
 40. Configure Redis to use Unix Socket than ports
 
 ```
-nano /etc/redis/redis.conf
+sudo nano /etc/redis/redis.conf
 ```
 
 ```
@@ -379,7 +379,7 @@ usermod -a -G redis www-data
 42. Configure Nextcloud for using Redis for File Locking
 
 ```
-nano /var/www/html/nextcloud/config/config.php
+sudo nano /var/www/html/nextcloud/config/config.php
 ```
 
 ```
@@ -397,7 +397,7 @@ nano /var/www/html/nextcloud/config/config.php
 43. Enable Redis session locking in PHP
 
 ```
-nano /etc/php/8.3/fpm/php.ini
+sudo nano /etc/php/8.3/fpm/php.ini
 ```
 
 ```
@@ -409,9 +409,9 @@ redis.session.lock_wait_time=10000
 44. Restart Redis, PHP-FPM and Apache
 
 ```
-systemctl restart redis-server
-systemctl restart php8.3-fpm
-systemctl restart apache2
+sudo systemctl restart redis-server
+sudo systemctl restart php8.3-fpm
+sudo systemctl restart apache2
 ```
 
 45. You can check the features are enabled on PHP
@@ -430,11 +430,11 @@ Now, that we have finished Performance improvement steps. We are going to work f
 47. Enable Pretty URL’s:
 
 ```
-nano /var/www/html/nextcloud/config/config.php
+sudo nano /var/www/html/nextcloud/config/config.php
 ```
 
 ```
-nano /var/www/html/nextcloud/config/config.php
+sudo nano /var/www/html/nextcloud/config/config.php
 ```
 
 This command will update the .htaccess file for the redirection
