@@ -5,7 +5,7 @@ services:
     env_file: .env
     restart: always
     volumes:
-      - /home/aetius/docker/linkwarden/pgdata:/var/lib/postgresql/data
+      - /home/stilicho/docker/linkwarden/pgdata:/var/lib/postgresql/data
     networks:
       - linkwarden #not nessassary if you don not use another postgress instance
       #- proxy
@@ -20,7 +20,7 @@ services:
     #ports:
     #  - 3000:3000
     volumes:
-      - /home/aetius/docker/linkwarden/data:/data/data
+      - /home/stilicho/docker/linkwarden/data:/data/data
     depends_on:
       - postgres
     networks:
