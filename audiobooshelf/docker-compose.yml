@@ -1,0 +1,35 @@
+services:
+    audiobookshelf:
+        image: ghcr.io/advplyr/audiobookshelf:latest
+        container_name: audiobookshelf
+        #ports:
+        #  - 13378:80
+        volumes:
+            - /mnt/media:/audiobooks
+            - /mnt/media:/podcasts
+            - /home/stilicho/docker/audiobookshelf/config:/config
+            - /home/stilicho/docker/audiobookshelf/metadata:/metadata
+        environment:
+            - TZ=Europe/Moscow
+        restart: unless-stopped
+        security_opt:
+            - no-new-privileges:true
+        networks:
+            proxy:
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.audiobookshelf.entrypoints=http"
+            - "traefik.http.routers.audiobookshelf.rule=Host(`audiobookshelf.domain.ru`)"
+            - "traefik.http.middlewares.audiobookshelf-https-redirect.redirectscheme.scheme=https"
+            - "traefik.http.routers.audiobookshelf.middlewares=audiobookshelf-https-redirect"
+            - "traefik.http.routers.audiobookshelf-secure.entrypoints=https"
+            - "traefik.http.routers.audiobookshelf-secure.rule=Host(`audiobookshelf.domain.ru`)"
+            - "traefik.http.routers.audiobookshelf-secure.tls=true"
+            - "traefik.http.routers.audiobookshelf-secure.service=audiobookshelf"
+            - "traefik.http.services.audiobookshelf.loadbalancer.server.port=80"
+            #- "traefik.http.routers.audiobookshelf-secure.middlewares=authentik@file"
+            - "traefik.docker.network=proxy"
+
+networks:
+    proxy:
+        external: true
