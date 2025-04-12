@@ -32,12 +32,14 @@ certificatesResolvers:
           - "1.1.1.1:53"
           - "1.0.0.1:53"
 #
+# Logs - https://doc.traefik.io/traefik/observability/logs/
 log:
   level: "INFO"
   filePath: "/var/log/traefik/traefik.log"
   noColor: false # Recommended to be true when using common
   maxSize: 100 # In megabytes
   compress: true # gzip compression when rotating
+#Access logs - https://doc.traefik.io/traefik/observability/access-logs/
 accessLog:
   addInternals: true
   filePath: "/var/log/traefik/access.log" 
