@@ -45,6 +45,9 @@ services:
       - /home/stilicho/docker/nextcloud/config:/var/www/html/config #local configuration
       - /home/stilicho/docker/nextcloud/custom_apps:/var/www/html/custom_apps #installed / modified apps
       - /home/stilicho/docker/nextcloud/themes:/var/www/html/themes/ #theming/branding
+  #  devices:
+  #    - /dev/dri:/dev/dri # VA-API (omit for NVENC) or use your videocard
+  
     environment:
       TZ: Europe/Moscow
       POSTGRES_HOST: postgres
@@ -137,6 +140,29 @@ services:
   ##  runtime: nvidia #(NVENC)
   #  networks:
   #    - nextcloud  
+
+
+  # еще один вариант для igpu
+  #go-vod:
+  #  image: radialapps/go-vod
+  #  container_name: go-vod
+  #  restart: always
+  #  init: true
+  #  depends_on:
+  #    - nextcloud
+  #  environment:
+  #    - NEXTCLOUD_HOST=https://next.aetius.ru
+    # - NEXTCLOUD_ALLOW_INSECURE=1 # (self-signed certs or no HTTPS)
+    #  - NVIDIA_VISIBLE_DEVICES=all
+  #  devices:
+  #    - /dev/dri:/dev/dri # VA-API (omit for NVENC)
+  #  volumes:
+  #    - /mnt/nextcloud/отец:/var/www/html:ro
+  #    - /mnt/nextcloud/мать:/var/www/html:ro
+  #    - /mnt/nextcloud/ребенок:/var/www/html:ro
+  #    - /home/user/nextcloud/nextcloud:/var/www/html:ro
+
+
 
 networks:
   nextcloud:
