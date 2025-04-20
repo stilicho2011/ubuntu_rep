@@ -1,4 +1,4 @@
----
+9---
 services:
   postgres:
     image: ${NEXTCLOUD_POSTGRES_IMAGE_TAG}
@@ -151,7 +151,7 @@ services:
   #  depends_on:
   #    - nextcloud
   #  environment:
-  #    - NEXTCLOUD_HOST=https://next.aetius.ru
+  #    - NEXTCLOUD_HOST=https://next.fgjvftjhg.ru
     # - NEXTCLOUD_ALLOW_INSECURE=1 # (self-signed certs or no HTTPS)
     #  - NVIDIA_VISIBLE_DEVICES=all
   #  devices:
