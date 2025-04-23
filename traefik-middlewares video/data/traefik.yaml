@@ -1,54 +1,124 @@
+# Traefik global configuration
+global:
+    checkNewVersion: true
+    sendAnonymousUsage: false
+# Enable traefik ui dashboard
 api:
-  dashboard: true
-  debug: true
+    dashboard: true
+    debug: true
 entryPoints:
-  http:
-    address: ":80"
-    http:
-      redirections:
-        entryPoint:
-          to: https
-          scheme: https
-  https:
-    address: ":443"
-serversTransport:
-  insecureSkipVerify: true
-providers:
-  docker:
-    endpoint: "unix:///var/run/docker.sock"
-    exposedByDefault: false
-  file:
-    directory: /config
-    watch: true
-    #filename: /config.yml
-certificatesResolvers:
-  cloudflare:
-    acme:
-      email: _____________ #add your email
-      storage: acme.json
-      dnsChallenge:
-        provider: cloudflare        
-        resolvers:
-          - "1.1.1.1:53"
-          - "1.0.0.1:53"
+    web:
+        address: ":80"
+        http:
+            middlewares:
+                - "crowdsec@file" # reference to a dynamic middleware for enabling crowdsec bouncer
+                - "cloudflarewarp@file" # reference to a dynamic middleware for enabling cloudflarewarp plugin
+                - "rate-limit@file" # reference to a dynamic middleware for enabling rate limiting per default
+            redirections:
+                entryPoint:
+                    to: websecure
+                    scheme: https
+    websecure:
+        address: ":443"
+        http:
+            middlewares:
+                - "crowdsec@file" # reference to a dynamic middleware for enabling crowdsec bouncer
+                - "cloudflarewarp@file" # reference to a dynamic middleware for enabling cloudflarewarp plugin
+                - "rate-limit@file" # reference to a dynamic middleware for enabling rate limiting per default
+            redirections:
+                entryPoint:
+                    to: websecure
+                    scheme: https
+    metrics:
+        address: :8082
+        #
+        forwardedHeaders:
+            trustedIPs:
+                # Cloudflare (https://www.cloudflare.com/ips-v4)
+                - "173.245.48.0/20"
+                - "103.21.244.0/22"
+                - "103.22.200.0/22"
+                - "103.31.4.0/22"
+                - "141.101.64.0/18"
+                - "108.162.192.0/18"
+                - "190.93.240.0/20"
+                - "188.114.96.0/20"
+                - "197.234.240.0/22"
+                - "198.41.128.0/17"
+                - "162.158.0.0/15"
+                - "104.16.0.0/13"
+                - "104.24.0.0/14"
+                - "172.64.0.0/13"
+                - "131.0.72.0/22"
+                # Local IPs
+                - "127.0.0.1/32"
+                - "10.0.0.0/8"
+                - "192.168.0.0/16"
+                - "172.16.0.0/12"
 #
-# Logs - https://doc.traefik.io/traefik/observability/logs/
+metrics:
+    prometheus:
+        entryPoint: metrics
+serversTransport:
+    insecureSkipVerify: true
+providers:
+    docker:
+        endpoint: "unix:///var/run/docker.sock"
+        exposedByDefault: false
+    file:
+        directory: /config
+        watch: true
+        #filename: /config.yml
+certificatesResolvers:
+    cloudflare:
+        acme:
+            email: admin@gmail.com
+            storage: acme.json
+            dnsChallenge:
+                provider: cloudflare
+                #disablePropagationCheck: true # uncomment this if you have issues pulling certificates through cloudflare, By setting this flag to true disables the need to wait for the propagation of the TXT record to all authoritative name servers.
+                resolvers:
+                    - "1.1.1.1:53"
+                    - "1.0.0.1:53"
+
 log:
-  level: "INFO"
-  filePath: "/var/log/traefik/traefik.log"
-  noColor: false # Recommended to be true when using common
-  maxSize: 100 # In megabytes
-  compress: true # gzip compression when rotating
-#Access logs - https://doc.traefik.io/traefik/observability/access-logs/
+    level: "INFO"
+    filePath: "/var/log/traefik/traefik.log"
+    noColor: false # Recommended to be true when using common. When using the 'common' format, disables the colorized output
+    maxSize: 100 # In megabytes. Maximum size in megabytes of the log file before it gets rotated.
+    compress: true # gzip compression when rotating. Determines if the rotated log files should be compressed using gzip.
 accessLog:
-  addInternals: true
-  filePath: "/var/log/traefik/access.log" 
-  bufferingSize: 100 # Number of log lines
-  fields:
-    names:
-      StartUTC: drop  # Write logs in Container Local Time instead of UTC
-  filters:
-    statusCodes:
-      - "204-299"
-      - "400-499"
-      - "500-599"
+    addInternals: true # Enables access logs for internal resources (e.g.: ping@internal)
+    filePath: "/var/log/traefik/access.log"
+    bufferingSize: 100 # number of log lines Traefik will keep in memory before writing them to the selected output
+    fields:
+        names:
+            StartUTC: drop # Write logs in Container Local Time instead of UTC. The time at which request processing started.
+    filters:
+        statusCodes:
+            - "204-299" #log successful http requests
+            - "400-599" #log failed http requests
+
+experimental:
+    plugins:
+        bouncer:
+            moduleName: "github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
+            version: "v1.4.2"
+        #
+        cloudflarewarp:
+            moduleName: github.com/BetterCorp/cloudflarewarp
+            version: v1.3.3
+
+# Only use secure ciphers - https://ssl-config.mozilla.org/#server=traefik&version=2.9&config=intermediate&guideline=5.6
+#tls:
+#  options:
+#    default:
+#      #sniStrict: true # prevents leaking default cert; see https://doc.traefik.io/traefik/https/tls/#cipher-suites
+#      minVersion: VersionTLS12
+#      cipherSuites:
+#        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+#        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+#        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+#        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+#        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+#        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
