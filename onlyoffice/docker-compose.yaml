@@ -3,7 +3,7 @@ services:
     container_name: onlyoffice-postgresql
     image: ${ONLYOFFICE_DOCUMENT_POSTGRES_IMAGE_TAG}
     volumes:
-      - /home/aetius/docker/office/onlyoffice-document-postgres:/var/lib/postgresql/data
+      - /home/stilicho/docker/office/onlyoffice-document-postgres:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: ${ONLYOFFICE_DOCUMENT_DB_NAME}
       POSTGRES_USER: ${ONLYOFFICE_DOCUMENT_DB_USER}
@@ -22,7 +22,7 @@ services:
     image: ${ONLYOFFICE_DOCUMENT_REDIS_IMAGE_TAG}
     container_name: onlyoffice-redis
     volumes:
-      - /home/aetius/docker/office/redis-onlyoffice-document-data:/data
+      - /home/stilicho/docker/office/redis-onlyoffice-document-data:/data
     networks:
       - onlyoffice
     healthcheck:
@@ -37,7 +37,7 @@ services:
     image: ${RABBITMQ_IMAGE_TAG}
     container_name: onlyoffice-rabbitmq
     volumes:
-      - /home/aetius/docker/office/rabbitmq-onlyoffice-document-data:/var/lib/rabbitmq
+      - /home/stilicho/docker/office/rabbitmq-onlyoffice-document-data:/var/lib/rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
@@ -55,11 +55,11 @@ services:
     image: ${ONLYOFFICE_DOCUMENT_IMAGE_TAG}
     container_name: onlyoffice-server
     volumes:
-      - /home/aetius/docker/office/onlyoffice-document-data:/var/www/onlyoffice/Data
-      - /home/aetius/docker/office/onlyoffice-document-log:/var/log/onlyoffice
-      - /home/aetius/docker/office/onlyoffice-document-cache-files:/var/lib/onlyoffice/documentserver/App_Data/cache/files
-      - /home/aetius/docker/office/onlyoffice-document-public-files:/var/www/onlyoffice/documentserver-example/public/files
-      - /home/aetius/docker/office/onlyoffice-document-fonts:/usr/share/fonts
+      - /home/stilicho/docker/office/onlyoffice-document-data:/var/www/onlyoffice/Data
+      - /home/stilicho/docker/office/onlyoffice-document-log:/var/log/onlyoffice
+      - /home/stilicho/docker/office/onlyoffice-document-cache-files:/var/lib/onlyoffice/documentserver/App_Data/cache/files
+      - /home/stilicho/docker/office/onlyoffice-document-public-files:/var/www/onlyoffice/documentserver-example/public/files
+      - /home/stilicho/docker/office/onlyoffice-document-fonts:/usr/share/fonts
     environment:
       DB_TYPE: postgres
       DB_HOST: postgres-onlyoffice-document
@@ -82,11 +82,11 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.onlyoffice-document.entrypoints=http"
-      - "traefik.http.routers.onlyoffice-document.rule=Host(`onlyoffice.aetius.ru`)"
+      - "traefik.http.routers.onlyoffice-document.rule=Host(`onlyoffice.stilicho.ru`)"
       - "traefik.http.middlewares.onlyoffice-document-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.onlyoffice-document.middlewares=onlyoffice-document-https-redirect"
       - "traefik.http.routers.onlyoffice-document-secure.entrypoints=https"
-      - "traefik.http.routers.onlyoffice-document-secure.rule=Host(`onlyoffice.aetius.ru`)"
+      - "traefik.http.routers.onlyoffice-document-secure.rule=Host(`onlyoffice.stilicho.ru`)"
       - "traefik.http.routers.onlyoffice-document-secure.tls=true"
       - "traefik.http.routers.onlyoffice-document-secure.service=onlyoffice-document"
       - "traefik.http.services.onlyoffice-document.loadbalancer.server.port=80"
@@ -119,4 +119,5 @@ networks:
   proxy:
     external: true 
   onlyoffice:
+    external: true
     external: true         
