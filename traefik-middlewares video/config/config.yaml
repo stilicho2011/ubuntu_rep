@@ -3,7 +3,7 @@ http:
     #
     nextcloud:
       entryPoints:
-        - "https"
+        - "websecure"
       rule: "Host(`nextcloud.stilicho.ru`)"        
       middlewares:
         - nextcloud-chain
@@ -12,7 +12,7 @@ http:
     #
     homepage:
       entryPoints:
-        - "https"
+        - "websecure"
       rule: "Host(`homepage.stilicho.ru`)"        
       middlewares:
         - default-headers
@@ -28,7 +28,7 @@ http:
     #
     plex:
       entryPoints:
-        - "https"
+        - "websecure"
       rule: "Host(`plex.stilicho.ru`)"        
       middlewares:
         - default-headers
@@ -38,7 +38,7 @@ http:
     #
     jellyfin:
       entryPoints:
-        - "https"
+        - "websecure"
       rule: "Host(`jellyfin.stilicho.ru`)"        
       middlewares:
         - default-headers
@@ -48,7 +48,7 @@ http:
     #
     truenas:
       entryPoints:
-        - "https"
+        - "websecure"
       rule: "Host(`truenas.stilicho.ru`)"        
       middlewares:
         - default-headers
@@ -58,7 +58,7 @@ http:
     #
     cockpit:
       entryPoints:
-        - "https"
+        - "websecure"
       rule: "Host(`cockpit.stilicho.ru`)"        
       middlewares:
         - default-headers
@@ -70,7 +70,7 @@ http:
     #
     pihole:
       entryPoints:
-        - "https"
+        - "websecure"
       rule: "Host(`pihole.stilicho.ru`)"
       middlewares:
         - redirectregex-pihole
@@ -84,7 +84,7 @@ http:
     #
     immich:
       entryPoints:
-        - "https"
+        - "websecure"
       rule: "Host(`immich.stilicho.ru`)"        
       middlewares:
         - default-headers
@@ -194,7 +194,7 @@ http:
         stsSeconds: 15552000
         customFrameOptionsValue: SAMEORIGIN
         customRequestHeaders:
-          X-Forwarded-Proto: https
+          X-Forwarded-Proto: websecure
   #
     secured:
       chain:
