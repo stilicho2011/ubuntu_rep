@@ -166,7 +166,7 @@ sudo nano /etc/apache2/sites-enabled/000-default.conf
             Require all granted
 	      </Directory>
 	      
-	    ServerName next.your_domain.ru
+	    ServerName nextcloud.your_domain.ru
         <IfModule mod_headers.c>
             Header always set Strict-Transport-Security "max-age=15552000; includeSubDomains"
            </IfModule>
