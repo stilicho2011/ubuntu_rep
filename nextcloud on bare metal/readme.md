@@ -96,20 +96,20 @@ Step4: Download Nextcloud, Unzip and Permission
 
 ```
 cd /var/www/html
-sudo wget https://download.nextcloud.com/server/releases/latest.zip
-sudo unzip latest.zip
+wget https://download.nextcloud.com/server/releases/latest.zip
+unzip latest.zip
 ```
 
 13. Remove the zip file, which is not necessary now:
 
 ```
-sudo rm -rf latest.zip
+rm -rf latest.zip
 ```
 
 14. Change the ownership of the nextcloud directory to the HTTP user:
 
 ```
-sudo chown -R www-data:www-data /var/www/html/nextcloud/
+chown -R www-data:www-data /var/www/html/nextcloud/
 ```
 
 Step5: Install Nextcloud From Command Line
