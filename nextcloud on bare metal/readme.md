@@ -68,7 +68,7 @@ mysql
 
 
 ```
-CREATE USER 'ncloud'@'localhost' IDENTIFIED BY 'твой_супер_секретный_пароль';
+CREATE USER 'ncloud'@'localhost' IDENTIFIED BY 'admin123';
 CREATE DATABASE ncloud CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 GRANT ALL PRIVILEGES ON ncloud.* TO 'ncloud'@'localhost';
 FLUSH PRIVILEGES;
