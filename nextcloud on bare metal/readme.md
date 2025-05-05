@@ -147,7 +147,7 @@ sudo nano /var/www/html/nextcloud/config/config.php
     5 => '2001:db8::/32',
    ),
   'default_phone_region' => 'RU',
-  'allow_local_remote_servers' => true',
+  'allow_local_remote_servers' => true,
   
 ```
 
