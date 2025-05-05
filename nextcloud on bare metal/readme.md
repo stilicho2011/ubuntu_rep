@@ -121,7 +121,7 @@ Step5: Install Nextcloud From Command Line
 cd /var/www/html/nextcloud
 sudo -u www-data php occ  maintenance:install --database \
 "mysql" --database-name "ncloud"  --database-user "ncloud" --database-pass \
-'username' --admin-user "admin" --admin-pass "password"
+'admin123' --admin-user "admin" --admin-pass "password"
 ```
 
 16. Nextcloud allows access only from localhost, it could through error “Access through untrusted domain”. we need to allow accessing Nextcloud by using ip or domain name:
@@ -133,6 +133,7 @@ sudo nano /var/www/html/nextcloud/config/config.php
   array (
     0 => 'localhost',
     1 => 'nextcloud.your_domain.ru',   // we Included the Sub Domain
+  ),
   'overwritehost' => 'nextcloud.your_domain.ru',
   'overwriteprotocol' => 'https',
   'overwrite.cli.url' => 'nextcloud.your_domain.ru',
@@ -156,6 +157,8 @@ sudo nano /var/www/html/nextcloud/config/config.php
 
 sudo nano /etc/apache2/sites-enabled/000-default.conf
 
+sudo nano /etc/apache2/sites-enabled/000-default.conf
+
 <VirtualHost *:80>
         ServerAdmin webmaster@localhost
         DocumentRoot /var/www/html/nextcloud
@@ -166,7 +169,7 @@ sudo nano /etc/apache2/sites-enabled/000-default.conf
             Require all granted
 	      </Directory>
 	      
-	    ServerName nextcloud.your_domain.ru
+	      ServerName nextcloud.yourdomain.ru
         <IfModule mod_headers.c>
             Header always set Strict-Transport-Security "max-age=15552000; includeSubDomains"
            </IfModule>
@@ -205,7 +208,7 @@ ls -la /var/run/php/php8.3-fpm.sock
 22. Disable mod_php and prefork module:
 
 ```
-a2dismod php8.4
+a2dismod php8.3
 a2dismod mpm_prefork
 ```
 
@@ -305,11 +308,11 @@ nano /etc/apache2/sites-enabled/000-default.conf
             Require all granted
               </Directory>
            
-            <FilesMatch ".php$"> 
+        <FilesMatch ".php$"> 
             SetHandler "proxy:unix:/var/run/php/php8.3-fpm.sock|fcgi://localhost/"
               </FilesMatch>   
             
-            ServerName nextcloud.your_domain.ru
+        ServerName nextcloud.your_domain.ru
         <IfModule mod_headers.c>
             Header always set Strict-Transport-Security "max-age=15552000; includeSubDomains"
            </IfModule>
