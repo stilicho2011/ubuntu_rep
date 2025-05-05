@@ -27,7 +27,6 @@ services:
             - "traefik.http.routers.audiobookshelf-secure.tls=true"
             - "traefik.http.routers.audiobookshelf-secure.service=audiobookshelf"
             - "traefik.http.services.audiobookshelf.loadbalancer.server.port=80"
-            #- "traefik.http.routers.audiobookshelf-secure.middlewares=authentik@file"
             - "traefik.docker.network=proxy"
 
 networks:
