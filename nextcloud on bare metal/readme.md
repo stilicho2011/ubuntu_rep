@@ -225,7 +225,7 @@ a2enconf php8.3-fpm
 systemctl restart apache2
 ```
 
-Now, for file upload size and performance settings, we need to tweak some php.ini settings listed below in the /etc/php/8.4/fpm/php.ini file. You can assign your own values depending on your environment.
+Now, for file upload size and performance settings, we need to tweak some php.ini settings listed below in the /etc/php/8.3/fpm/php.ini file. You can assign your own values depending on your environment.
 
 ```
 upload_max_filesize = 64M
@@ -245,10 +245,10 @@ grep -E "upload_max_filesize|post_max_size|memory_limit|max_execution_time|max_i
 26. Instead of manual change, you can execute the below command to change at once. it will save time:
 
 ```
-sed -i 's/^upload_max_filesize.*/upload_max_filesize = 64M/; s/^post_max_size.*/post_max_size = 96M/; s/^memory_limit.*/memory_limit = 512M/; s/^max_execution_time.*/max_execution_time = 600/; s/^;max_input_vars.*/max_input_vars = 3000/; s/^max_input_time.*/max_input_time = 1000/' /etc/php/8.4/fpm/php.ini
+sed -i 's/^upload_max_filesize.*/upload_max_filesize = 64M/; s/^post_max_size.*/post_max_size = 96M/; s/^memory_limit.*/memory_limit = 512M/; s/^max_execution_time.*/max_execution_time = 600/; s/^;max_input_vars.*/max_input_vars = 3000/; s/^max_input_time.*/max_input_time = 1000/' /etc/php/8.3/fpm/php.ini
 ```
 
-Now, we need update PHP-FPM pool Configurations at /etc/php/8.4/fpm/pool.d/www.conf, below are some optimum values, but you should assign your own values.
+Now, we need update PHP-FPM pool Configurations at /etc/php/8.3/fpm/pool.d/www.conf, below are some optimum values, but you should assign your own values.
 
 ```
 pm.max_children = 64
@@ -266,7 +266,7 @@ grep -E "pm.max_children|pm.start_servers|pm.min_spare_servers|pm.max_spare_serv
 28. Change all the values at once with the below command:
 
 ```
-sed -i 's/^pm.max_children = .*/pm.max_children = 64/; s/^pm.start_servers = .*/pm.start_servers = 16/; s/^pm.min_spare_servers = .*/pm.min_spare_servers = 16/; s/^pm.max_spare_servers = .*/pm.max_spare_servers = 32/' /etc/php/8.4/fpm/pool.d/www.conf
+sed -i 's/^pm.max_children = .*/pm.max_children = 64/; s/^pm.start_servers = .*/pm.start_servers = 16/; s/^pm.min_spare_servers = .*/pm.min_spare_servers = 16/; s/^pm.max_spare_servers = .*/pm.max_spare_servers = 32/' /etc/php/8.3/fpm/pool.d/www.conf
 ```
 
 29. Now, restart PHP-FPM to apply all the changes:
@@ -279,7 +279,7 @@ Now, Insert the below code to apache’s default site configuration file /etc/ap
 
 	```
     <FilesMatch ".php$">
-         SetHandler "proxy:unix:/var/run/php/php8.4-fpm.sock|fcgi://localhost/"
+         SetHandler "proxy:unix:/var/run/php/php8.3-fpm.sock|fcgi://localhost/"
 	</FilesMatch>
     ```
 
@@ -372,7 +372,7 @@ Check it is running or not from the [URL]/info.php file previously we created.
 Opcache JIT (Just-In-Time) compilation is an important feature. JIT compilation improves PHP performance by compiling code into machine language at runtime, rather than interpreting it each time it’s executed. This can significantly enhance the performance of CPU-intensive tasks. So it will be very effective to enable it to increase nextcloud performance.
 
 ```
-nano /etc/php/8.4/fpm/conf.d/10-opcache.ini
+nano /etc/php/8.3/fpm/conf.d/10-opcache.ini
 
 zend_extension=opcache.so
 opcache.enable=1
