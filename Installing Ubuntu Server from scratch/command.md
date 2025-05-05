@@ -3,11 +3,11 @@ sudo apt update && sudo apt upgrade
 ```
 
 ```
-sudo apt install cifs-utils nfs commono qemu-guest-agent
+sudo apt install cifs-utils nfs-commons qemu-guest-agent
 ```
 
 ```
-sudo apt install ca-certificates curl gnupg lsb-release ntp htop zip unzip gnupg apt-transport-https ca-certificates net-tools ncdu apache2-utils btop mc alsa-utils pciutils
+sudo apt install ca-certificates curl gnupg lsb-release ntp htop zip unzip gnupg apt-transport-https net-tools ncdu apache2-utils btop mc alsa-utils pciutils
 ```
 
 ```
