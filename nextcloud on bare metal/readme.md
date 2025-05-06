@@ -136,7 +136,7 @@ sudo nano /var/www/html/nextcloud/config/config.php
   ),
   'overwritehost' => 'nextcloud.your_domain.ru',
   'overwriteprotocol' => 'https',
-  'overwrite.cli.url' => 'nextcloud.your_domain.ru',
+  'overwrite.cli.url' => 'http://localhost',
   'trusted_proxies' => 
   array (
     0 => '192.168.0.0/16',
