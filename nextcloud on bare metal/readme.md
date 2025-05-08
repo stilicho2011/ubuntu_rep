@@ -557,5 +557,8 @@ sudo crontab -u www-data -e
 ```
 */5  *  *  *  * php -f /var/www/html/nextcloud/cron.php
 ```
- 
+```
+ sudo -u www-data php /var/www/html/nextcloud/occ app:update --all
+```
+
 
