@@ -3,7 +3,7 @@ sudo apt update && sudo apt upgrade
 ```
 
 ```
-sudo apt install cifs-utils nfs-commons qemu-guest-agent
+sudo apt install cifs-utils nfs-common qemu-guest-agent
 ```
 
 ```
