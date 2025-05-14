@@ -10,3 +10,6 @@ docker exec --user www-data -it nextcloud php occ config:system:set default_phon
 */5 * * * * docker exec -u www-data nextcloud php cron.php
 
 docker exec --user www-data -it nextcloud php occ config:system:set maintenance_window_start --type=integer --value=1
+
+
+docker exec --user www-data -it nextcloud php occ files:scan --all
