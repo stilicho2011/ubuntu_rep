@@ -248,6 +248,12 @@ grep -E "upload_max_filesize|post_max_size|memory_limit|max_execution_time|max_i
 sed -i 's/^upload_max_filesize.*/upload_max_filesize = 64M/; s/^post_max_size.*/post_max_size = 96M/; s/^memory_limit.*/memory_limit = 512M/; s/^max_execution_time.*/max_execution_time = 600/; s/^;max_input_vars.*/max_input_vars = 3000/; s/^max_input_time.*/max_input_time = 1000/' /etc/php/8.3/fpm/php.ini
 ```
 
+or
+
+```
+sed -i 's/^upload_max_filesize.*/upload_max_filesize = 16G/; s/^post_max_size.*/post_max_size = 16G/; s/^memory_limit.*/memory_limit = 512M/; s/^max_execution_time.*/max_execution_time = 600/; s/^;max_input_vars.*/max_input_vars = 3000/; s/^max_input_time.*/max_input_time = 1000/' /etc/php/8.3/fpm/php.ini
+```
+
 Now, we need update PHP-FPM pool Configurations at /etc/php/8.3/fpm/pool.d/www.conf, below are some optimum values, but you should assign your own values.
 
 ```
@@ -261,6 +267,12 @@ pm.max_spare_servers = 32
 
 ```
 grep -E "pm.max_children|pm.start_servers|pm.min_spare_servers|pm.max_spare_servers" /etc/php/8.3/fpm/pool.d/www.conf
+```
+or 
+
+```
+sed -i 's/^pm.max_children = .*/pm.max_children = 70/; s/^pm.start_servers = .*/pm.start_servers = 20/; s/^pm.min_spare_servers = .*/pm.min_spare_servers = 20/; s/^pm.max_spare_servers = 
+.*/pm.max_spare_servers = 60/' /etc/php/8.3/fpm/pool.d/www.conf
 ```
 
 28. Change all the values at once with the below command:
