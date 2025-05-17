@@ -268,17 +268,17 @@ pm.max_spare_servers = 32
 ```
 grep -E "pm.max_children|pm.start_servers|pm.min_spare_servers|pm.max_spare_servers" /etc/php/8.3/fpm/pool.d/www.conf
 ```
-or 
-
-```
-sed -i 's/^pm.max_children = .*/pm.max_children = 70/; s/^pm.start_servers = .*/pm.start_servers = 20/; s/^pm.min_spare_servers = .*/pm.min_spare_servers = 20/; s/^pm.max_spare_servers = 
-.*/pm.max_spare_servers = 60/' /etc/php/8.3/fpm/pool.d/www.conf
-```
 
 28. Change all the values at once with the below command:
 
 ```
 sed -i 's/^pm.max_children = .*/pm.max_children = 64/; s/^pm.start_servers = .*/pm.start_servers = 16/; s/^pm.min_spare_servers = .*/pm.min_spare_servers = 16/; s/^pm.max_spare_servers = .*/pm.max_spare_servers = 32/' /etc/php/8.3/fpm/pool.d/www.conf
+```
+or 
+
+```
+sed -i 's/^pm.max_children = .*/pm.max_children = 70/; s/^pm.start_servers = .*/pm.start_servers = 20/; s/^pm.min_spare_servers = .*/pm.min_spare_servers = 20/; s/^pm.max_spare_servers = 
+.*/pm.max_spare_servers = 60/' /etc/php/8.3/fpm/pool.d/www.conf
 ```
 
 29. Now, restart PHP-FPM to apply all the changes:
