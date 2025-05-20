@@ -11,7 +11,9 @@ sudo su
 apt update && apt upgrade -y
 ```
 
-
+```
+dpkg-reconfigure locales
+```
 
 Step2: Install Apache2 and PHP Modules.
 
