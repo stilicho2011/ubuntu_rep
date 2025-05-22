@@ -1,0 +1,176 @@
+---
+###############################################################
+#                   Authelia configuration                    #
+###############################################################
+
+server:
+  address: 'tcp://:9091/'
+  
+log:
+  level: debug
+
+theme: dark
+
+identity_validation:
+  reset_password:
+    jwt_secret: unsecure_jwt_secret
+
+totp:
+  issuer: authelia.com
+
+# duo_api:
+#  hostname: api-123456789.example.com
+#  integration_key: ABCDEF
+#  # This secret can also be set using the env variables AUTHELIA_DUO_API_SECRET_KEY_FILE
+#  secret_key: 1234567890abcdefghifjkl
+
+password_policy:
+  standard:
+    enabled: true
+    min_length: 16
+    max_length: 0
+    require_uppercase: true
+    require_lowercase: true
+    require_number: true
+    require_special: true
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+    password:
+      algorithm: argon2id
+      iterations: 1
+      salt_length: 16
+      parallelism: 8
+      memory: 64
+
+access_control:
+  default_policy: deny
+  rules:
+    # Rules applied to everyone
+    # chose from bypass, one_factor and two_factor
+    - domain: public.example.com
+      policy: bypass
+    - domain: subdomain1.example.com
+      policy: one_factor
+    - domain: subdomain2.example.com
+      policy: two_factor
+      subject:
+        - "group:admins"  # access restriction based on groups
+
+session:
+  name: authelia_session
+  # This secret can also be set using the env variables AUTHELIA_SESSION_SECRET_FILE
+  secret: unsecure_session_secret
+  expiration: 1h  # 1 hour
+  inactivity: 5m  # 5 minutes
+  cookies:
+    - domain: example.com
+      authelia_url: 'https://example.com'
+      default_redirection_url: 'https://www.example.com'  # must be diffent to authelia_url
+      
+  redis:
+    host: authelia-redis
+    port: 6379
+    # This secret can also be set using the env variables AUTHELIA_SESSION_REDIS_PASSWORD_FILE
+    password: SuperSecureRedisAuthPassword # must be the same as in the docker-compose.yml defined for the redis service
+
+regulation:
+  max_retries: 3
+  find_time: 120
+  ban_time: 300
+
+# yubikey support
+webauthn:
+  disable: false
+  display_name: Authelia
+  attestation_conveyance_preference: indirect
+  user_verification: preferred
+  timeout: 60s
+
+storage:
+  encryption_key: a_very_important_secret # Now required
+  local:
+    path: /config/db.sqlite3
+
+notifier:
+  # smtp:
+  #   username: test
+  #   # This secret can also be set using the env variables AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE
+  #   password: password
+  #   host: smtp.gmail.com
+  #   port: 465
+  #   sender: "MySender <admin@example.com>"
+  filesystem:
+    filename: /config/notifications.txt
+
+#identity_providers:
+#  oidc:
+#    hmac_secret: 'a-very-secure-hmac-secret'
+#    jwks:
+#      - key_id: 'authelia'
+#        algorithm: 'RS256'
+#        use: 'sig'
+#        certificate_chain: |
+#          -----BEGIN CERTIFICATE-----
+#          <PUBLIC-KEY-DATA-COMES-HERE>
+#          -----END CERTIFICATE-----
+#        key: |
+#          -----BEGIN PRIVATE KEY-----
+#          <PRIVATE-KEY-DATA-COMES-HERE>
+#          -----END PRIVATE KEY-----
+#    enable_client_debug_messages: false
+#    minimum_parameter_entropy: 8
+#    enforce_pkce: 'public_clients_only'
+#    enable_pkce_plain_challenge: false
+#    enable_jwt_access_token_stateless_introspection: false
+#    discovery_signed_response_alg: 'none'
+#    discovery_signed_response_key_id: ''
+#    require_pushed_authorization_requests: false
+#    lifespans:
+#      access_token: '1h'
+#      authorize_code: '1m'
+#      id_token: '1h'
+#      refresh_token: '90m'
+#    cors:
+#      endpoints:
+#        - 'authorization'
+#        - 'token'
+#        - 'revocation'
+#        - 'introspection'
+#      allowed_origins:
+#        - 'https://immich.example.com'
+#      allowed_origins_from_client_redirect_uris: false
+#    clients:
+#      - client_id: immich
+#        client_name: Immich OIDC
+#        client_secret: 'a-very-secure-client-secret'
+#        public: false
+#        authorization_policy: one_factor # may use two_factor to enforce 2FA
+#        consent_mode: explicit
+#        token_endpoint_auth_method: "client_secret_basic"
+#        pre_configured_consent_duration: 1w
+#        scopes:
+#          - openid
+#          - groups
+#          - email
+#          - profile
+#        redirect_uris: # adjust to your domains
+#          - https://authelia.example.com/
+#          - https://authelia.example.com/oauth2/callback
+#          - https://immich.example.com/oauth2/callback
+#          - https://immich.example.com/auth/login
+#          - https://immich.example.com/user-settings
+#          - https://immich.example.com
+#          - app.immich:/
+#          - https://immich.example.com/api/oauth/mobile-redirect
+#        grant_types:
+#          - refresh_token
+#          - authorization_code
+#        response_types:
+#          - code
+#        response_modes:
+#          - form_post
+#          - query
+#          - fragment    
+...
