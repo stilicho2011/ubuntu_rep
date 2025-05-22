@@ -1,0 +1,79 @@
+services:
+    zitadel:
+        restart: "always"
+        container_name: zitadel
+        networks:
+            - zitadel
+            - proxy
+        image: "ghcr.io/zitadel/zitadel:latest"
+        command: 'start-from-init --masterkey "${MASTERKEY_32}" --tlsMode external'
+        env_file: .env
+        environment:
+            ZITADEL_DATABASE_POSTGRES_HOST: zitadel-db
+            ZITADEL_DATABASE_POSTGRES_PORT: 5432
+            ZITADEL_DATABASE_POSTGRES_DATABASE: zitadel
+            ZITADEL_DATABASE_POSTGRES_USER_USERNAME: ${DB_USER}
+            ZITADEL_DATABASE_POSTGRES_USER_PASSWORD: ${DB_PASSWORD}
+            ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE: disable
+            ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME: ${DB_ADMIN_USER}
+            ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD: ${DB_ADMIN_PASSWORD}
+            ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE: disable
+            ZITADEL_FIRSTINSTANCE_ORG_HUMAN_USERNAME: ${ZITADEL_LOGIN_USER} 
+            ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD: ${ZITADEL_LOGIN_PASSWORD}
+            ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORDCHANGEREQUIRED: false
+            ZITADEL_FIRSTINSTANCE_ORG_NAME: HomeLab
+            ZITADEL_PORT: 8080 #For External TLS (Also use h2c)
+            ZITADEL_EXTERNALPORT: 443
+            ZITADEL_EXTERNALDOMAIN: ${ZITADEL_SUBDOMAIN}.${DOMAIN_NAME} #eg. auth.DOMAIN_NAME
+            ZITADEL_EXTERNALSECURE: true
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.zitadel.entrypoints=http"
+            - "traefik.http.routers.zitadel.rule=Host(`${ZITADEL_SUBDOMAIN}.${DOMAIN_NAME}`)"
+            - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+            - "traefik.http.routers.zitadel.middlewares=https-redirect"
+            - "traefik.http.routers.zitadel-secure.entrypoints=https"
+            - "traefik.http.routers.zitadel-secure.rule=Host(`${ZITADEL_SUBDOMAIN}.${DOMAIN_NAME}`)"
+            - "traefik.http.routers.zitadel-secure.tls=true"
+            - "traefik.http.routers.zitadel-secure.service=zitadel"
+            - "traefik.http.services.zitadel.loadbalancer.server.scheme=h2c"
+            - "traefik.http.services.zitadel.loadbalancer.passHostHeader=true"
+            - "traefik.http.services.zitadel.loadbalancer.server.port=8080"
+            - "traefik.docker.network=proxy"
+        depends_on:
+            zitadel-db:
+                condition: "service_healthy"
+
+    zitadel-db:
+        restart: "always"
+        container_name: zitadel-db
+        image: postgres:17-alpine
+        env_file: .env
+        environment:
+            POSTGRES_USER: ${DB_ADMIN_USER}
+            POSTGRES_PASSWORD: ${DB_ADMIN_PASSWORD}
+        networks:
+            - zitadel
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "pg_isready",
+                    "-d",
+                    "zitadel",
+                    "-U",
+                    "${DB_ADMIN_USER}",
+                ]
+            interval: "10s"
+            timeout: "30s"
+            retries: 5
+            start_period: "20s"
+        volumes:
+            - ${DB_LOCATION}:/var/lib/postgresql/data
+
+networks:
+    zitadel:
+        name: zitadel
+    proxy:
+        external: true
+        name: proxy
