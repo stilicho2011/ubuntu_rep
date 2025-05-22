@@ -1,0 +1,88 @@
+services:
+    postgres:
+        image: postgres:16-alpine
+        container_name: keycloak-db
+        restart: always
+        expose:
+            - 5432
+        volumes:
+            - /home/pathto/docker/keycloak/database:/var/lib/postgresql/data
+        environment:
+            POSTGRES_DB: ${POSTGRES_DB}
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "pg_isready",
+                    "-q",
+                    "-d",
+                    "${POSTGRES_DB}",
+                    "-U",
+                    "${POSTGRES_USER}",
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+            start_period: 60s
+        networks:
+            - keycloak
+
+    keycloak:
+        image: quay.io/keycloak/keycloak
+        container_name: keycloak
+        command: start
+        environment:
+            KC_HOSTNAME: ${KEYCLOAK_HOSTNAME}
+            KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+            KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+            KC_DB: postgres
+            KC_DB_URL: jdbc:postgresql://postgres/${POSTGRES_DB}
+            KC_DB_USERNAME: ${POSTGRES_USER}
+            KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+            KC_PROXY_HEADERS: "xforwarded"
+            KC_HTTP_ENABLED: true
+            KC_HEALTH_ENABLED: true
+            PROXY_ADDRESS_FORWARDING: "true"
+        healthcheck:
+            test:
+                - "CMD-SHELL"
+                - |
+                    exec 3<>/dev/tcp/localhost/9000 &&
+                    echo -e 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 &&
+                    cat <&3 | tee /tmp/healthcheck.log | grep -q '200 OK'
+            interval: 10s
+            timeout: 5s
+            retries: 3
+            start_period: 90s
+        #ports:
+        #  - 8080:8080
+        #expose:
+        #  - 8080 # web ui http
+        #  - 9000 # health endpoint
+        restart: always
+        depends_on:
+            postgres:
+                condition: service_healthy
+        networks:
+            - keycloak
+            - proxy
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.keycloak.entrypoints=http"
+            - "traefik.http.routers.keycloak.rule=Host(`keycloak.domain.ru`)"
+            - "traefik.http.middlewares.keycloak-https-redirect.redirectscheme.scheme=https"
+            - "traefik.http.routers.keycloak.middlewares=keycloak-https-redirect"
+            - "traefik.http.routers.keycloak-secure.entrypoints=https"
+            - "traefik.http.routers.keycloak-secure.rule=Host(`keycloak.domain.ru`)"
+            - "traefik.http.routers.keycloak-secure.tls=true"
+            - "traefik.http.routers.keycloak-secure.service=keycloak"
+            - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+            - "traefik.docker.network=proxy"
+
+networks:
+    keycloak:
+        internal: true
+    proxy:
+        external: true
