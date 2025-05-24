@@ -9,6 +9,21 @@ services:
       - /path/to/your/directory:/etc/wireguard
     ports:
       - "51820:51820/udp"
+    environment:
+      # ⚠️ Required:
+      # Change this to your host's public address
+      - WG_HOST=vpn.homelab.com
+      # Optional:
+      # - PASSWORD=
+      # - WG_PORT=51820
+      # - WG_DEFAULT_ADDRESS=10.8.0.x
+      # - WG_DEFAULT_DNS=1.1.1.1
+      # - WG_MTU=1420
+      #-  WG_ALLOWED_IPS=
+      # - WG_PRE_UP=echo "Pre Up" > /etc/wireguard/pre-up.txt
+      # - WG_POST_UP=echo "Post Up" > /etc/wireguard/post-up.txt
+      # - WG_PRE_DOWN=echo "Pre Down" > /etc/wireguard/pre-down.txt
+      # - WG_POST_DOWN=echo "Post Down" > /etc/wireguard/post-down.txt
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
@@ -34,24 +49,8 @@ services:
       - "traefik.http.routers.WireGuardRouteSSL.rule=Host(`vpn.myhomelab.com`)"
       - "traefik.http.routers.WireGuardRouteSSL.entrypoints=websecure"
       - "traefik.http.routers.WireGuardRouteSSL.tls.certresolver=MainCertResolver"
-    environment:
-      # ⚠️ Required:
-      # Change this to your host's public address
-      - WG_HOST=vpn.homelab.com
-
-      # Optional:
-      # - PASSWORD=
-      # - WG_PORT=51820
-      # - WG_DEFAULT_ADDRESS=10.8.0.x
-      # - WG_DEFAULT_DNS=1.1.1.1
-      # - WG_MTU=1420
-      #-  WG_ALLOWED_IPS=
-      # - WG_PRE_UP=echo "Pre Up" > /etc/wireguard/pre-up.txt
-      # - WG_POST_UP=echo "Post Up" > /etc/wireguard/post-up.txt
-      # - WG_PRE_DOWN=echo "Pre Down" > /etc/wireguard/pre-down.txt
-      # - WG_POST_DOWN=echo "Post Down" > /etc/wireguard/post-down.txt
-
-
+    security_opt:
+      - no-new-privileges:true
 
 networks:
   proxy:
