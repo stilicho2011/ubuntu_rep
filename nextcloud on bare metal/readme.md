@@ -27,7 +27,7 @@ apt install apache2 -y
 3. Install dependencies:
 
 ```
-sudo apt install php php-common libapache2-mod-php php-bz2 php-gd php-mysql \
+apt install php php-common libapache2-mod-php php-bz2 php-gd php-mysql \
 php-curl php-mbstring php-imagick php-zip php-common php-curl php-xml \
 php-json php-bcmath php-xml php-intl php-gmp zip unzip wget smbclient libmagickcore-6.q16-7-extra ffmpeg -y
 ```
@@ -156,10 +156,7 @@ sudo nano /var/www/html/nextcloud/config/config.php
 17. Configure Apache to load Nextcloud from the /var/www/html/nextcloud folder:
 
 ```
-
-sudo nano /etc/apache2/sites-enabled/000-default.conf
-
-sudo nano /etc/apache2/sites-enabled/000-default.conf
+nano /etc/apache2/sites-enabled/000-default.conf
 
 <VirtualHost *:80>
         ServerAdmin webmaster@localhost
@@ -169,12 +166,12 @@ sudo nano /etc/apache2/sites-enabled/000-default.conf
             Options Indexes FollowSymLinks
             AllowOverride All
             Require all granted
-	      </Directory>
+        </Directory>
 	      
-	      ServerName nextcloud.yourdomain.ru
+	ServerName nextcloud.yourdomain.ru
         <IfModule mod_headers.c>
             Header always set Strict-Transport-Security "max-age=15552000; includeSubDomains"
-           </IfModule>
+        </IfModule>
         
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
@@ -279,8 +276,7 @@ sed -i 's/^pm.max_children = .*/pm.max_children = 64/; s/^pm.start_servers = .*/
 or 
 
 ```
-sed -i 's/^pm.max_children = .*/pm.max_children = 70/; s/^pm.start_servers = .*/pm.start_servers = 20/; s/^pm.min_spare_servers = .*/pm.min_spare_servers = 20/; s/^pm.max_spare_servers = 
-.*/pm.max_spare_servers = 60/' /etc/php/8.3/fpm/pool.d/www.conf
+sed -i 's/^pm.max_children = .*/pm.max_children = 70/; s/^pm.start_servers = .*/pm.start_servers = 20/; s/^pm.min_spare_servers = .*/pm.min_spare_servers = 20/; s/^pm.max_spare_servers = .*/pm.max_spare_servers = 60/' /etc/php/8.3/fpm/pool.d/www.conf
 ```
 
 29. Now, restart PHP-FPM to apply all the changes:
@@ -294,7 +290,7 @@ Now, Insert the below code to apache’s default site configuration file /etc/ap
 	```
     <FilesMatch ".php$">
          SetHandler "proxy:unix:/var/run/php/php8.3-fpm.sock|fcgi://localhost/"
-	</FilesMatch>
+    </FilesMatch>
     ```
 
 30. After providing the code, apache’s default site configuration will look like the below snippet:
@@ -320,16 +316,16 @@ nano /etc/apache2/sites-enabled/000-default.conf
             Options Indexes FollowSymLinks
             AllowOverride All
             Require all granted
-              </Directory>
+        </Directory>
            
         <FilesMatch ".php$"> 
             SetHandler "proxy:unix:/var/run/php/php8.3-fpm.sock|fcgi://localhost/"
-              </FilesMatch>   
+        </FilesMatch>   
             
         ServerName nextcloud.your_domain.ru
         <IfModule mod_headers.c>
             Header always set Strict-Transport-Security "max-age=15552000; includeSubDomains"
-           </IfModule>
+        </IfModule>
 
         # Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
         # error, crit, alert, emerg.
@@ -371,7 +367,7 @@ cd /var/www/html/nextcloud
 nano info.php
 ```
 ```
-    <?php phpinfo(); ?>
+<?php phpinfo(); ?>
 ```
 
 Now, Browse [URL]/info.php. if the PHP-FPM is enabled on the PHP. it will show “Server API FPM/FastCGI”
@@ -427,8 +423,8 @@ apc.enable_cli=1
 Now, Restart PHP-FPM and Apache
 
 ```
-sudo systemctl restart php8.3-fpm
-sudo systemctl restart apache2
+systemctl restart php8.3-fpm
+systemctl restart apache2
 ```
 
 Now, Check the [URL]/info.php again, it will show the “APCu support Enabled”
@@ -453,7 +449,7 @@ In Nextcloud, Redis is used for local and distributed caching as well as transac
 38. Install Redis Server and Redis php extension
 
 ```
-sudo apt install redis-server php-redis -y
+apt install redis-server php-redis -y
 ```
 
 
@@ -468,7 +464,7 @@ systemctl status redis-server
 40. Configure Redis to use Unix Socket than ports
 
 ```
-sudo nano /etc/redis/redis.conf
+nano /etc/redis/redis.conf
 ```
 
 ```
@@ -486,7 +482,7 @@ usermod -a -G redis www-data
 42. Configure Nextcloud for using Redis for File Locking
 
 ```
-sudo nano /var/www/html/nextcloud/config/config.php
+nano /var/www/html/nextcloud/config/config.php
 ```
 
 ```
@@ -505,7 +501,7 @@ sudo nano /var/www/html/nextcloud/config/config.php
 43. Enable Redis session locking in PHP
 
 ```
-sudo nano /etc/php/8.3/fpm/php.ini
+nano /etc/php/8.3/fpm/php.ini
 ```
 
 ```
@@ -517,9 +513,9 @@ redis.session.lock_wait_time=10000
 44. Restart Redis, PHP-FPM and Apache
 
 ```
-sudo systemctl restart redis-server
-sudo systemctl restart php8.3-fpm
-sudo systemctl restart apache2
+systemctl restart redis-server
+systemctl restart php8.3-fpm
+systemctl restart apache2
 ```
 
 45. You can check the features are enabled on PHP
@@ -537,7 +533,7 @@ https://help.nextcloud.com/t/installing-redis-for-memcache/162599/6
 47. Enable Pretty URL’s:
 
 ```
-sudo nano /var/www/html/nextcloud/config/config.php
+nano /var/www/html/nextcloud/config/config.php
 ```
 
 ```
@@ -575,7 +571,7 @@ sudo crontab -u www-data -e
 sudo -u www-data php /var/www/html/nextcloud/occ files:scan --all
 ```
 ```
- sudo -u www-data php /var/www/html/nextcloud/occ app:update --all
+sudo -u www-data php /var/www/html/nextcloud/occ app:update --all
 ```
 
 
