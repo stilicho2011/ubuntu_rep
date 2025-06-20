@@ -2,46 +2,45 @@
 
 services:
   traefik:
-    image: traefik:latest
-    container_name: traefik
-    restart: unless-stopped
+    image: traefik:latest # Use the latest Traefik image
+    container_name: traefik # Name of the container
+    restart: unless-stopped # Ensures the container restarts if it stops unexpectedly
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges:true # Prevents the container from gaining additional privileges
     networks:
-       proxy:
+       proxy: # Connects to the predefined external network named 'proxy'
     ports:
-      - 80:80
-      - 443:443
+      - 80:80 # HTTP port
+      - 443:443 # HTTPS port
     environment:
-      - CF_API_EMAIL=mail@gmail.com
-      - CF_DNS_API_TOKEN=apitoken
+      - CF_API_EMAIL=mail@gmail.com # Cloudflare account email for API access
+      - CF_DNS_API_TOKEN=apitoken # Cloudflare DNS API token
       # - CF_API_KEY=YOU_API_KEY
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /home/user/docker/traefik/traefik.yaml:/traefik.yaml:ro
-      - /home/user/docker/traefik/acme.json:/acme.json
-      - /home/user/docker/traefik/config.yaml:/config.yaml:ro
-      - /home/user/docker/traefik/logs:/var/log/traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.entrypoints=http"
-      - "traefik.http.routers.traefik.rule=Host(`traefik-dashboard.user.ru`)"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=user:password"
-      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
-      - "traefik.http.routers.traefik-secure.entrypoints=https"
-      - "traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.user.ru`)"
-      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
-      - "traefik.http.routers.traefik-secure.tls=true"
-      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].main=user.ru"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.user.ru"
-      - "traefik.http.routers.traefik-secure.service=api@internal"
-
+      - /etc/localtime:/etc/localtime:ro # Sync time with the host
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Allows Traefik to interact with Docker
+      - /home/user/docker/traefik/traefik.yaml:/traefik.yaml:ro # Traefik configuration file
+      - /home/user/docker/traefik/acme.json:/acme.json # SSL certificate file
+      - /home/user/docker/traefik/config.yaml:/config.yaml:ro # Additional configuration file
+      - /home/user/docker/traefik/logs:/var/log/traefik # Log directory 
+    labels: 
+      - "traefik.enable=true" # Enable Traefik on this service
+      - "traefik.http.routers.traefik.entrypoints=http" # Define HTTP entrypoint
+      - "traefik.http.routers.traefik.rule=Host(`traefik-dashboard.user.ru`)" # Host rule for routing
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=user:password" # Basic auth for security traefik for username/pass
+      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https" # Redirect HTTP to HTTPS
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https" # Set forwarded headers for SSL
+      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect" # Apply HTTPS redirect middleware
+      - "traefik.http.routers.traefik-secure.entrypoints=https" # Secure entrypoint for HTTPS
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.user.ru`)"  # Host rule for secure routing
+      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth" # Apply authentication middleware
+      - "traefik.http.routers.traefik-secure.tls=true" # Enable TLS for secure connection
+      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare" # Use Cloudflare for SSL certificate resolution
+      - "traefik.http.routers.traefik-secure.tls.domains[0].main=user.ru" # Main domain for SSL certificate
+      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.user.ru" # SANs for SSL certificate
+      - "traefik.http.routers.traefik-secure.service=api@internal" # Internal service for Traefik API
 
 networks:
   proxy:
-    name: proxy
-    external: true
+    name: proxy # Specifies the external network to connect to
+    external: true # Indicates that the network is external
