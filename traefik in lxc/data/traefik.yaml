@@ -62,12 +62,12 @@ metrics:
         entryPoint: metrics
 serversTransport:
     insecureSkipVerify: true
-providers:
-    docker:
-        endpoint: "unix:///var/run/docker.sock"
-        exposedByDefault: false
+#providers:
+#    docker:
+#        endpoint: "unix:///var/run/docker.sock"
+#        exposedByDefault: false
     file:
-        directory: /config
+        directory: /etc/traefik/dynamic
         watch: true
         #filename: /config.yml
 certificatesResolvers:
