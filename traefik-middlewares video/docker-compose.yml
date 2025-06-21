@@ -40,7 +40,7 @@ services:
             - "traefik.http.routers.traefik-secure.tls.domains[0].main=user.ru"
             - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.user.ru"
             - "traefik.http.routers.traefik-secure.service=api@internal"
-            - "traefik.http.routers.traefik-secure.middlewares=authentik@file"
+            #- "traefik.http.routers.traefik-secure.middlewares=authentik@file"
 
     whoami:
         image: "traefik/whoami"
