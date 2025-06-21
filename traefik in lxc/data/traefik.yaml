@@ -62,7 +62,7 @@ metrics:
         entryPoint: metrics
 serversTransport:
     insecureSkipVerify: true
-#providers:
+providers:
 #    docker:
 #        endpoint: "unix:///var/run/docker.sock"
 #        exposedByDefault: false
