@@ -1,0 +1,28 @@
+#------------: https://doc.traefik.io/traefik/contributing/data-collection/
+global:
+ checkNewVersion: true
+ sendAnonymousUsage: true
+ 
+#------------: https://doc.traefik.io/traefik/operations/api/
+api:
+  dashboard: true
+  insecure: true
+  debug: true
+  disableDashboardAd: false
+
+#------------: https://doc.traefik.io/traefik/observability/logs/
+log:
+  level: DEBUG  #TRACE DEBUG INFO WARN ERROR FATAL PANIC
+
+#------------: https://doc.traefik.io/traefik/routing/entrypoints/
+entryPoints:
+  http:
+    address: ":80"
+  https:
+    address: ":443"
+
+#------------: https://doc.traefik.io/traefik/providers/file/
+providers:
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
