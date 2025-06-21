@@ -1,0 +1,25 @@
+
+http:
+  middlewares:
+    # Middleware chain for Nextcloud
+    nextcloud-chain:
+      chain:
+        middlewares:
+          # - ... (e.g. rate limiting middleware)
+          - https-redirect
+          - nextcloud-secure-headers
+          - default-headers
+          - nextcloud-redirectregex
+
+    nextcloud-redirectregex:
+      redirectRegex:
+        regex: "https://(.*)/.well-known/(?:card|cal)dav"
+        replacement: "https://$${1}/remote.php/dav"            
+
+    nextcloud-secure-headers:
+      headers:
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+        referrerPolicy: "same-origin"
+        customResponseHeaders:
+          X-Robots-Tag: "noindex, nofollow"    

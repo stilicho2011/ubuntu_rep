@@ -1,0 +1,12 @@
+################################################################
+# Middlewares
+# https://doc.traefik.io/traefik/middlewares/http/ratelimit/
+# Dynamic configuration
+################################################################
+http:
+  middlewares:
+    # DDoS Prevention
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50

@@ -1,0 +1,34 @@
+################################################################
+# Middlewares
+# https://doc.traefik.io/traefik/middlewares/http/headers/#adding-headers-to-the-request-and-the-response
+# Dynamic configuration
+################################################################
+http:
+    middlewares:
+        # Security headers
+        security-headers:
+            headers:
+                customResponseHeaders: # field names are case-insensitive
+                    #X-Robots-Tag: "all,noarchive,nosnippet,notranslate,noimageindex"
+                    Server: "" # prevent version disclosure
+                    X-Powered-By: "" # prevent version disclosure
+                    X-Forwarded-Proto: "https"
+                    #Permissions-Policy: "accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(), gamepad=(), geolocation=(), gyroscope=(), hid=(), identity-credentials-get=(), idle-detection=(), local-fonts=(), magnetometer=(), microphone=(), midi=(), otp-credentials=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), storage-access=(), usb=(), web-share=(), window-management=(), xr-spatial-tracking=()"
+                    #Cross-Origin-Embedder-Policy: "unsafe-none"
+                    #Cross-Origin-Opener-Policy: "same-origin"
+                    #Cross-Origin-Resource-Policy: "same-site"
+                sslProxyHeaders:
+                    X-Forwarded-Proto: "https"
+                hostsProxyHeaders:
+                    - "X-Forwarded-Host"
+                #customRequestHeaders:
+                #  X-Forwarded-Proto: "https"
+                contentTypeNosniff: true # X-Content-Type-Options
+                customFrameOptionsValue: "SAMEORIGIN" # X-Frame-Options
+                browserXssFilter: false # X-XSS-Protection; deprecated
+                referrerPolicy: "strict-origin-when-cross-origin" # Referrer-Policy
+                forceSTSHeader: true # HTTP-Strict-Transport-Security (HSTS)
+                stsIncludeSubdomains: true # HTTP-Strict-Transport-Security (HSTS)
+                stsSeconds: 63072000 # HTTP-Strict-Transport-Security (HSTS)
+                stsPreload: true # HTTP-Strict-Transport-Security (HSTS)
+                #contentSecurityPolicy: "default-src 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests; block-all-mixed-content" # Content-Security-Policy (CSP)

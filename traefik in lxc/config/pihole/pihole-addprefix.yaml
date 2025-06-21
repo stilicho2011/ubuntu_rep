@@ -1,0 +1,16 @@
+http:
+  middlewares:
+    addprefix-pihole:
+      addPrefix:
+        prefix: "/admin"
+        https-redirect:
+#
+    https-redirectscheme:
+      redirectScheme:
+        scheme: https
+        permanent: true
+    #
+    redirectregex-pihole:
+      redirectRegex:
+        regex: "/admin/(.*)"
+        replacement: /
