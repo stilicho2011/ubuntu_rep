@@ -25,10 +25,11 @@ entryPoints:
                 - "crowdsec@file" # reference to a dynamic middleware for enabling crowdsec bouncer
                 - "cloudflarewarp@file" # reference to a dynamic middleware for enabling cloudflarewarp plugin
                 - "rate-limit@file" # reference to a dynamic middleware for enabling rate limiting per default
-            redirections:
-                entryPoint:
-                    to: websecure
-                    scheme: https
+        transport:
+          respondingTimeouts:
+            readTimeout: 600s
+            idleTimeout: 600s
+            writeTimeout: 600s
     metrics:
         address: :8082
         #
@@ -72,7 +73,7 @@ providers:
 certificatesResolvers:
     cloudflare:
         acme:
-            email: admin@gmail.com
+            email: email@gmail.com
             storage: acme.json
             dnsChallenge:
                 provider: cloudflare
@@ -87,8 +88,9 @@ log:
     noColor: false # Recommended to be true when using common. When using the 'common' format, disables the colorized output
     maxSize: 100 # In megabytes. Maximum size in megabytes of the log file before it gets rotated.
     compress: true # gzip compression when rotating. Determines if the rotated log files should be compressed using gzip.
+#
 accessLog:
-    addInternals: true # Enables access logs for internal resources (e.g.: ping@internal)
+    addInternals: true #Enables access logs for internal resources (e.g.: ping@internal)
     filePath: "/var/log/traefik/access.log"
     bufferingSize: 100 # number of log lines Traefik will keep in memory before writing them to the selected output
     fields:
@@ -96,9 +98,9 @@ accessLog:
             StartUTC: drop # Write logs in Container Local Time instead of UTC. The time at which request processing started.
     filters:
         statusCodes:
-            - "204-299" #log successful http requests
-            - "400-599" #log failed http requests
-
+            - "204-299"
+            - "400-599"
+#
 experimental:
     plugins:
         bouncer:
@@ -106,9 +108,8 @@ experimental:
             version: "v1.4.2"
         #
         cloudflarewarp:
-            moduleName: github.com/BetterCorp/cloudflarewarp
+            modulename: github.com/BetterCorp/cloudflarewarp
             version: v1.3.3
-
 # Only use secure ciphers - https://ssl-config.mozilla.org/#server=traefik&version=2.9&config=intermediate&guideline=5.6
 #tls:
 #  options:
