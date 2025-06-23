@@ -30,7 +30,7 @@ mv ./traefik /usr/local/bin
 we will save a single static config file and all certificates in this directory
 
 ```
-mkdir /etc/traefik ```
+mkdir /etc/traefik
 ```
 all dynamic config files will be saved in this directory
 ```
