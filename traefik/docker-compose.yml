@@ -16,6 +16,7 @@ services:
       - CF_API_EMAIL=mail@gmail.com # Cloudflare account email for API access
       - CF_DNS_API_TOKEN=apitoken # Cloudflare DNS API token
       # - CF_API_KEY=YOU_API_KEY
+      # - VULTR_API_KEY=YOU_API_KEY
     volumes:
       - /etc/localtime:/etc/localtime:ro # Sync time with the host
       - /var/run/docker.sock:/var/run/docker.sock:ro # Allows Traefik to interact with Docker
@@ -36,6 +37,7 @@ services:
       - "traefik.http.routers.traefik-secure.middlewares=traefik-auth" # Apply authentication middleware
       - "traefik.http.routers.traefik-secure.tls=true" # Enable TLS for secure connection
       - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare" # Use Cloudflare for SSL certificate resolution
+      # - "traefik.http.routers.traefik-secure.tls.certresolver=vultr"
       - "traefik.http.routers.traefik-secure.tls.domains[0].main=user.ru" # Main domain for SSL certificate
       - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.user.ru" # SANs for SSL certificate
       - "traefik.http.routers.traefik-secure.service=api@internal" # Internal service for Traefik API
