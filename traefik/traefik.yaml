@@ -25,7 +25,8 @@ certificatesResolvers:
       email: mail@gmail.com #add your email
       storage: acme.json
       dnsChallenge:
-        provider: cloudflare        
+        provider: cloudflare 
+        # provider: vultr
         resolvers:
           - "1.1.1.1:53"
           - "1.0.0.1:53"
