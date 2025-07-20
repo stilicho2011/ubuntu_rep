@@ -1,94 +1,104 @@
 # Traefik global configuration
+#-https://doc.traefik.io/traefik/contributing/data-collection/
 global:
-    checkNewVersion: true
-    sendAnonymousUsage: false
+  checkNewVersion: true
+  sendAnonymousUsage: false
 # Enable traefik ui dashboard
+#-https://doc.traefik.io/traefik/operations/api/
 api:
-    dashboard: true
-    debug: true
+  dashboard: true
+  insecure: false   # access to http://traefikIP:8080/dashboard/ is disabled
+  debug: true
 entryPoints:
-    web:
-        address: ":80"
-        http:
-            middlewares:
-                - "crowdsec@file" # reference to a dynamic middleware for enabling crowdsec bouncer
-                - "cloudflarewarp@file" # reference to a dynamic middleware for enabling cloudflarewarp plugin
-                - "rate-limit@file" # reference to a dynamic middleware for enabling rate limiting per default
-            redirections:
-                entryPoint:
-                    to: websecure
-                    scheme: https
-    websecure:
-        address: ":443"
-        http:
-            middlewares:
-                - "crowdsec@file" # reference to a dynamic middleware for enabling crowdsec bouncer
-                - "cloudflarewarp@file" # reference to a dynamic middleware for enabling cloudflarewarp plugin
-                - "rate-limit@file" # reference to a dynamic middleware for enabling rate limiting per default
-        transport:
-          respondingTimeouts:
-            readTimeout: 600s
-            idleTimeout: 600s
-            writeTimeout: 600s
-    metrics:
-        address: :8082
-        #
-        forwardedHeaders:
-            trustedIPs:
-                # Cloudflare (https://www.cloudflare.com/ips-v4)
-                - "173.245.48.0/20"
-                - "103.21.244.0/22"
-                - "103.22.200.0/22"
-                - "103.31.4.0/22"
-                - "141.101.64.0/18"
-                - "108.162.192.0/18"
-                - "190.93.240.0/20"
-                - "188.114.96.0/20"
-                - "197.234.240.0/22"
-                - "198.41.128.0/17"
-                - "162.158.0.0/15"
-                - "104.16.0.0/13"
-                - "104.24.0.0/14"
-                - "172.64.0.0/13"
-                - "131.0.72.0/22"
-                # Local IPs
-                - "127.0.0.1/32"
-                - "10.0.0.0/8"
-                - "192.168.0.0/16"
-                - "172.16.0.0/12"
+  web:
+    address: ":80"
+    http:
+    #    middlewares:
+    #        - "crowdsec@file" # reference to a dynamic middleware for enabling crowdsec bouncer
+    #        - "cloudflarewarp@file" # reference to a dynamic middleware for enabling cloudflarewarp plugin
+    #        - "rate-limit@file" # reference to a dynamic middleware for enabling rate limiting per default
+      redirections:
+          entryPoint:
+              to: websecure
+              scheme: https
+  websecure:
+    address: ":443"
+    #http:
+    #    middlewares:
+    #        - "crowdsec@file" # reference to a dynamic middleware for enabling crowdsec bouncer
+    #        - "cloudflarewarp@file" # reference to a dynamic middleware for enabling cloudflarewarp plugin
+    #        - "rate-limit@file" # reference to a dynamic middleware for enabling rate limiting per default
+    #transport:
+    #  respondingTimeouts:
+    #    readTimeout: 600s
+    #    idleTimeout: 600s
+    #    writeTimeout: 600s
+  metrics:
+    address: :8082
+    #
+    forwardedHeaders:
+        trustedIPs:
+            # Cloudflare (https://www.cloudflare.com/ips-v4)
+            - "173.245.48.0/20"
+            - "103.21.244.0/22"
+            - "103.22.200.0/22"
+            - "103.31.4.0/22"
+            - "141.101.64.0/18"
+            - "108.162.192.0/18"
+            - "190.93.240.0/20"
+            - "188.114.96.0/20"
+            - "197.234.240.0/22"
+            - "198.41.128.0/17"
+            - "162.158.0.0/15"
+            - "104.16.0.0/13"
+            - "104.24.0.0/14"
+            - "172.64.0.0/13"
+            - "131.0.72.0/22"
+            # Local IPs
+            - "127.0.0.1/32"
+            - "10.0.0.0/8"
+            - "192.168.0.0/16"
+            - "172.16.0.0/12"
 #
 metrics:
-    prometheus:
-        entryPoint: metrics
+  prometheus:
+      entryPoint: metrics
 serversTransport:
     insecureSkipVerify: true
+#-https://doc.traefik.io/traefik/providers/overview/
 providers:
+#-https://doc.traefik.io/traefik/providers/docker/
 #    docker:
 #        endpoint: "unix:///var/run/docker.sock"
 #        exposedByDefault: false
+#-https://doc.traefik.io/traefik/providers/file/
     file:
         directory: /etc/traefik/dynamic
         watch: true
-        #filename: /config.yml
+        #filename: /etc/traefik/config.yml # when a specific file is desired
+#-https://doc.traefik.io/traefik/https/acme/
 certificatesResolvers:
-    cloudflare:
-        acme:
-            email: email@gmail.com
-            storage: acme.json
-            dnsChallenge:
-                provider: cloudflare
-                #disablePropagationCheck: true # uncomment this if you have issues pulling certificates through cloudflare, By setting this flag to true disables the need to wait for the propagation of the TXT record to all authoritative name servers.
-                resolvers:
-                    - "1.1.1.1:53"
-                    - "1.0.0.1:53"
+  cloudflare:
+    acme:
+      caServer: https://acme-v02.api.letsencrypt.org/directory         # prod #https://letsencrypt.org/docs/rate-limits/
+      # caServer: https://acme-staging-v02.api.letsencrypt.org/directory # test
+      email: email@gmail.com # valid Cloudflare-account email
+      storage: /etc/traefik/acme.json
+      dnsChallenge:
+        provider: cloudflare
+        #disablePropagationCheck: true # uncomment this if you have issues pulling certificates through cloudflare, By setting this flag to true disables the need to wait for the propagation of the TXT record to all authoritative name servers.
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
 
-log:
+log: #- https://doc.traefik.io/traefik/observability/logs/
     level: "INFO"
     filePath: "/var/log/traefik/traefik.log"
     noColor: false # Recommended to be true when using common. When using the 'common' format, disables the colorized output
     maxSize: 100 # In megabytes. Maximum size in megabytes of the log file before it gets rotated.
     compress: true # gzip compression when rotating. Determines if the rotated log files should be compressed using gzip.
 #
+#-https://doc.traefik.io/traefik/observability/access-logs/
 accessLog:
     addInternals: true #Enables access logs for internal resources (e.g.: ping@internal)
     filePath: "/var/log/traefik/access.log"
@@ -105,7 +115,7 @@ experimental:
     plugins:
         bouncer:
             moduleName: "github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
-            version: "v1.4.2"
+            version: "v1.4.4"
         #
         cloudflarewarp:
             modulename: github.com/BetterCorp/cloudflarewarp

@@ -1,0 +1,13 @@
+[Unit]
+Description=Start Traefik Proxy
+Documentation=https://go-acme.github.io/lego/dns/cloudflare/
+
+[Service]
+# declare the Cloudflare API token so Let's Encrypt can verify the domain name
+Environment="CLOUDFLARE_DNS_API_TOKEN=your_token"
+ExecStart=/usr/local/bin/traefik
+Restart=always
+
+[Install]
+# installs a hook to use this unit file when the system boots or shuts down
+WantedBy=multi-user.target

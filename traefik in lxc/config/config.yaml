@@ -1,176 +1,71 @@
 http:
+#-https://doc.traefik.io/traefik/routing/routers/
   routers:
     #
-    nextcloud:
-      entryPoints:
-        - "websecure"
-      rule: "Host(`nextcloud.stilicho.ru`)"        
+    dashboard:
+      rule: "Host(`traefik-dashboard.stilicho.ru`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      service: api@internal
       middlewares:
-        - nextcloud-chain
-      tls: {}
-      service: nextcloud
-    #
-    homepage:
+        - traefik-auth
+     #   - default-headers
+     #   - https-redirect
+     #
+    portainer:
       entryPoints:
-        - "websecure"
-      rule: "Host(`homepage.stilicho.ru`)"        
-      middlewares:
-        - default-headers
-        - https-redirect
-        - authentik
-      priority: 10
-      tls: {}
-      service: homepage
-    #homepage-auth:
-    #  rule: "Host(`auth.stilicho.ru`) || HostRegexp(`{subdomain:[a-z0-9]+}.stilicho.ru`) && PathPrefix(`/outpost.goauthentik.io/`)"
-    #  priority: 15
-    #  service: authentik
-    #
-    plex:
-      entryPoints:
-        - "websecure"
-      rule: "Host(`plex.stilicho.ru`)"        
+       - "websecure"
+      rule: "Host(`portainer.stilicho.ru`)"        
       middlewares:
         - default-headers
         - https-redirect
       tls: {}
-      service: plex
+      service: portainer
     #
-    jellyfin:
-      entryPoints:
-        - "websecure"
-      rule: "Host(`jellyfin.stilicho.ru`)"        
-      middlewares:
-        - default-headers
-        - https-redirect
-      tls: {}
-      service: jellyfin
-    #
-    truenas:
-      entryPoints:
-        - "websecure"
-      rule: "Host(`truenas.stilicho.ru`)"        
-      middlewares:
-        - default-headers
-        - https-redirect
-      tls: {}
-      service: truenas
-    #
-    cockpit:
-      entryPoints:
-        - "websecure"
-      rule: "Host(`cockpit.stilicho.ru`)"        
-      middlewares:
-        - default-headers
-        - https-redirect
-        - authentik
-      #priority: 10  
-      tls: {}
-      service: cockpit
-    #
-    pihole:
-      entryPoints:
-        - "websecure"
-      rule: "Host(`pihole.stilicho.ru`)"
-      middlewares:
-        - redirectregex-pihole
-        - default-headers
-        - addprefix-pihole
-        - https-redirectscheme
-        - authentik
-      priority: 10
-      tls: {}
-      service: pihole
-    #
-    immich:
-      entryPoints:
-        - "websecure"
-      rule: "Host(`immich.stilicho.ru`)"        
-      middlewares:
-        - default-headers
-        - https-redirect
-      tls: {}
-      service: immich
-    #
- #end region
+#end region
+#-https://doc.traefik.io/traefik/routing/services/
   services:
-    #
-    plex:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.0.1:32400"
-        passHostHeader: true    
-    #
-    jellyfin:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.01.58:8096"
-        passHostHeader: true
-    #
-    nextcloud:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.01.67:8081"
-        passHostHeader: true
-    #
-    homepage:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.01.157:3000"
-        passHostHeader: true
-    #
-    cockpit:
-      loadBalancer:
-        servers:
-          - url: "https://192.168.01.157:9090"
-        passHostHeader: true
-    #
-    truenas:
-      loadBalancer:
-        servers:
-          - url: "https://192.168.01.999"
-        passHostHeader: true  
-    #
-    pihole:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.01.987:80"
-        passHostHeader: true      
 #
-    immich:
+    portainer:
       loadBalancer:
         servers:
-          - url: "http://192.168.01.789:2283"
+          - url: "http://192.168.10.157:9443"
         passHostHeader: true  
   #end region
-  middlewares:
-    # Middleware for Redirection
-    # This can be used instead of global redirection
-    crowdsec:
-      plugin:
-        bouncer:
-          enabled: true
-          logLevel: INFO
-          updateIntervalSeconds: 15
-          updateMaxFailure: 0
-          defaultDecisionSeconds: 15
-          httpTimeoutSeconds: 10
-          crowdsecMode: stream
-          crowdsecAppsecEnabled: true
-          crowdsecAppsecHost: crowdsec:7422
-          crowdsecAppsecFailureBlock: true
-          crowdsecAppsecUnreachableBlock: true
-          crowdsecLapiKey: ____________________________ # Replace CrowdSec API key (docker exec crowdsec cscli bouncers add crowdsecBouncer)
-          crowdsecLapiHost: crowdsec:8080
-          crowdsecLapiScheme: http
-          forwardedHeadersTrustedIPs:
-            - 10.0.0.0/8
-            - 172.16.0.0/12
-            - 192.168.0.0/16                                                        
-          clientTrustedIPs:
-            - 10.0.0.0/8
-            - 172.16.0.0/12
-            - 192.168.0.0/16
+# Middleware for Redirection
+# This can be used instead of global redirection
+#-https://doc.traefik.io/traefik/middlewares/http/overview/
+  middlewares: 
+  #
+    traefik-auth:
+      basicAuth:
+        users:    # users and their MD5 hashed passwords, granted access to the traefik-proxy dashboard
+         - "admin:$1$M196zkpJ$vw.T7SKDkQknMO2D/vvRU/"
+         - "admin2:$1$M196zkpJ$vw.T7SKDkQknMO2D/vvRU/"
+
+  #  crowdsec:
+  #    plugin:
+  #      bouncer:
+  #        enabled: true
+  #        logLevel: INFO
+  #        updateIntervalSeconds: 15
+  #        updateMaxFailure: 0
+  #        defaultDecisionSeconds: 15
+  #        httpTimeoutSeconds: 10
+  #        crowdsecMode: stream
+  #        crowdsecAppsecEnabled: true
+  #        crowdsecAppsecHost: crowdsec:7422
+  #        crowdsecAppsecFailureBlock: true
+  #        crowdsecAppsecUnreachableBlock: true
+  #        crowdsecLapiKey: ____________________________ # Replace CrowdSec API key (docker exec crowdsec cscli bouncers add crowdsecBouncer)
+  #        crowdsecLapiHost: crowdsec:8080
+  #        crowdsecLapiScheme: http
+  #        forwardedHeadersTrustedIPs:
+  #          - 10.0.0.0/8
+  #          - 172.16.0.0/12
+  #          - 192.168.0.0/16                                                        
+  #        clientTrustedIPs:
+  #          - 10.0.0.0/8
+  #          - 172.16.0.0/12
+  #          - 192.168.0.0/16
   
   #
     cloudflarewarp:                                                                      
@@ -180,8 +75,8 @@ http:
           trustip:                                                                       
             - "2400:cb00::/32"
   #
-    gzip:
-      compress: {}
+#    gzip:
+#      compress: {}
   #  
     default-headers:
       headers:
@@ -195,10 +90,36 @@ http:
         customFrameOptionsValue: SAMEORIGIN
         customRequestHeaders:
           X-Forwarded-Proto: websecure
-  #
-    secured:
-      chain:
-        middlewares:
-        - default-whitelist
-        - default-headers
      
+#-https://doc.traefik.io/traefik/https/tls/
+tls:
+ options:
+   default:
+     minVersion: VersionTLS12    # change to a lower version if you expect to service Internet traffic from around the world
+     curvePreferences:   # below priority sequence can be changed
+       - X25519     # the most commonly used 128-bit
+       - CurveP256  # the next most commonly used 128-bit
+       - CurveP384  # 192-bit
+       - CurveP521  # 256-bit
+     sniStrict: true     # true if our own certificates should be enforced
+#  certificates:
+#    - certFile: /etc/traefik/domain.cert
+#      keyFile: /etc/traefik/domain.key
+#    - certFile: /etc/traefik/certificate.pem
+#      keyFile: /etc/traefik/private_key.pem
+#### Traefik uses its own default certificate for connections without SNI, or without a matching domain.
+#### However, we can provide our own default certificate, instead of using the Traefik default.
+#  stores:
+#    default:
+#      defaultCertificate:
+#        certFile: /etc/traefik/cert.crt
+#        keyFile: /etc/traefik/cert.key
+#### Alternatively, we can use an ACME generated default certificate.
+ stores:
+   default:
+     defaultGeneratedCert:
+       resolver: cloudflare
+       domain:
+         main: stilicho.ru
+         sans:
+           - "*.stilicho.ru"     
