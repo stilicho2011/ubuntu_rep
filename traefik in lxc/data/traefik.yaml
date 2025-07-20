@@ -63,6 +63,8 @@ entryPoints:
 metrics:
   prometheus:
       entryPoint: metrics
+# https://doc.traefik.io/traefik/routing/services/#serverstransport_1
+# https://www.cloudflare.com/en-gb/learning/ssl/what-is-sni/
 serversTransport:
     insecureSkipVerify: true
 #-https://doc.traefik.io/traefik/providers/overview/

@@ -20,16 +20,33 @@ http:
       tls: {}
       service: portainer
     #
-#end region
-#-https://doc.traefik.io/traefik/routing/services/
+    proxmox:
+      entryPoints:
+        - "https"
+      rule: "Host(`prod.stilicho.ru`)"
+      middlewares:
+        - internal-https-hosts
+      tls:
+        certResolver: cloudflare
+        domains:
+          - main: "prod.stilicho.ru"
+      service: proxmox
+
+# https://doc.traefik.io/traefik/routing/services/
   services:
 #
+    proxmox:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.0.0:8006"
+        passHostHeader: true
+
     portainer:
       loadBalancer:
         servers:
-          - url: "http://192.168.10.157:9443"
-        passHostHeader: true  
-  #end region
+          - url: "http://192.168.0.1:9443"
+        passHostHeader: true    
+#end region
 # Middleware for Redirection
 # This can be used instead of global redirection
 #-https://doc.traefik.io/traefik/middlewares/http/overview/
@@ -74,9 +91,6 @@ http:
           disableDefault: false                                                          
           trustip:                                                                       
             - "2400:cb00::/32"
-  #
-#    gzip:
-#      compress: {}
   #  
     default-headers:
       headers:
@@ -90,18 +104,36 @@ http:
         customFrameOptionsValue: SAMEORIGIN
         customRequestHeaders:
           X-Forwarded-Proto: websecure
-     
+#     
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
+#
+    default-whitelist:
+      ipAllowList:
+        sourceRange:
+        - "10.0.0.0/8"
+        - "192.168.0.0/16"
+        - "172.16.0.0/12"
+
+    secured:
+      chain:
+        middlewares:
+        - default-whitelist
+        - default-headers
+
 #-https://doc.traefik.io/traefik/https/tls/
 tls:
- options:
-   default:
-     minVersion: VersionTLS12    # change to a lower version if you expect to service Internet traffic from around the world
-     curvePreferences:   # below priority sequence can be changed
-       - X25519     # the most commonly used 128-bit
-       - CurveP256  # the next most commonly used 128-bit
-       - CurveP384  # 192-bit
-       - CurveP521  # 256-bit
-     sniStrict: true     # true if our own certificates should be enforced
+  options:
+    default:
+      minVersion: VersionTLS12    # VersionTLS13 shoudl be changed to a lower version if you expect to service Internet traffic from around the world
+      curvePreferences:   # below priority sequence can be changed
+        - X25519     # the most commonly used 128-bit
+        - CurveP256  # the next most commonly used 128-bit
+        - CurveP384  # 192-bit
+        - CurveP521  # 256-bit
+      sniStrict: true     # true if our own certificates should be enforced
 #  certificates:
 #    - certFile: /etc/traefik/domain.cert
 #      keyFile: /etc/traefik/domain.key
@@ -115,11 +147,11 @@ tls:
 #        certFile: /etc/traefik/cert.crt
 #        keyFile: /etc/traefik/cert.key
 #### Alternatively, we can use an ACME generated default certificate.
- stores:
-   default:
-     defaultGeneratedCert:
-       resolver: cloudflare
-       domain:
-         main: stilicho.ru
-         sans:
-           - "*.stilicho.ru"     
+  stores:
+    default:
+      defaultGeneratedCert:
+        resolver: cloudflare
+        domain:
+          main: stilicho.ru
+          sans:
+            - "*.stilicho.ru"     
