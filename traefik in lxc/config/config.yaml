@@ -1,98 +1,49 @@
 http:
-#-https://doc.traefik.io/traefik/routing/routers/
+# https://doc.traefik.io/traefik/routing/routers/
   routers:
-    #
+   # harden dashboard access: can only be accessed with a username/password
     dashboard:
-      rule: "Host(`traefik-dashboard.stilicho.ru`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      entryPoints:
+        - websecure 
+      rule: "Host(`traefik-dashboard.domain.ru`)"
       service: api@internal
       middlewares:
-        - traefik-auth
-     #   - default-headers
-     #   - https-redirect
-     #
-    portainer:
+        - auth
+      tls:
+        certResolver: cloudflare  
+
+    radarr:
       entryPoints:
-       - "websecure"
-      rule: "Host(`portainer.stilicho.ru`)"        
-      middlewares:
-        - default-headers
-        - https-redirect
-      tls: {}
-      service: portainer
-    #
-    proxmox:
-      entryPoints:
-        - "https"
-      rule: "Host(`prod.stilicho.ru`)"
+        - "websecure"
+      rule: "Host(`radarr.domain.ru`)"        
       middlewares:
         - default-headers
         - https-redirect
       tls:
         certResolver: cloudflare
-        domains:
-          - main: "prod.stilicho.ru"
-      service: proxmox
+      service: radarr
 
 # https://doc.traefik.io/traefik/routing/services/
-  services:
-#
-    proxmox:
+  services: 
+    radarr:
       loadBalancer:
         servers:
-          - url: "https://192.168.0.0:8006"
+          - url: "http://192.168.10.100:7878"            # Change IP Address to your radarr instance
         passHostHeader: true
 
-    portainer:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.0.1:9443"
-        passHostHeader: true    
-#end region
-# Middleware for Redirection
-# This can be used instead of global redirection
-#-https://doc.traefik.io/traefik/middlewares/http/overview/
-  middlewares: 
-  #
-    traefik-auth:
+# https://doc.traefik.io/traefik/middlewares/http/overview/
+  middlewares:
+#
+    auth:
       basicAuth:
-        users:    # users and their MD5 hashed passwords, granted access to the traefik-proxy dashboard
-         - "admin:$1$M196zkpJ$vw.T7SKDkQknMO2D/vvRU/"
-         - "admin2:$1$M196zkpJ$vw.T7SKDkQknMO2D/vvRU/"
+        users:    # users and their MD5 hashed passwords, granted access to the traefik dashboard
+          - "admin:hashedpassword"
+#
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
 
-  #  crowdsec:
-  #    plugin:
-  #      bouncer:
-  #        enabled: true
-  #        logLevel: INFO
-  #        updateIntervalSeconds: 15
-  #        updateMaxFailure: 0
-  #        defaultDecisionSeconds: 15
-  #        httpTimeoutSeconds: 10
-  #        crowdsecMode: stream
-  #        crowdsecAppsecEnabled: true
-  #        crowdsecAppsecHost: crowdsec:7422
-  #        crowdsecAppsecFailureBlock: true
-  #        crowdsecAppsecUnreachableBlock: true
-  #        crowdsecLapiKey: ____________________________ # Replace CrowdSec API key (docker exec crowdsec cscli bouncers add crowdsecBouncer)
-  #        crowdsecLapiHost: crowdsec:8080
-  #        crowdsecLapiScheme: http
-  #        forwardedHeadersTrustedIPs:
-  #          - 10.0.0.0/8
-  #          - 172.16.0.0/12
-  #          - 192.168.0.0/16                                                        
-  #        clientTrustedIPs:
-  #          - 10.0.0.0/8
-  #          - 172.16.0.0/12
-  #          - 192.168.0.0/16
-  
-  #
-    cloudflarewarp:                                                                      
-      plugin:                                                                            
-        cloudflarewarp:                                                                  
-          disableDefault: false                                                          
-          trustip:                                                                       
-            - "2400:cb00::/32"
-  #  
     default-headers:
       headers:
         frameDeny: true
@@ -104,37 +55,25 @@ http:
         stsSeconds: 15552000
         customFrameOptionsValue: SAMEORIGIN
         customRequestHeaders:
-          X-Forwarded-Proto: websecure
-#     
-    https-redirect:
-      redirectScheme:
-        scheme: https
-        permanent: true
-#
-    default-whitelist:
-      ipAllowList:
-        sourceRange:
-        - "10.0.0.0/8"
-        - "192.168.0.0/16"
-        - "172.16.0.0/12"
+          X-Forwarded-Proto: https
 
-    secured:
-      chain:
-        middlewares:
-        - default-whitelist
-        - default-headers
-
-#-https://doc.traefik.io/traefik/https/tls/
+# https://doc.traefik.io/traefik/https/tls/
 tls:
-  options:
-    default:
-      minVersion: VersionTLS12    # VersionTLS13 shoudl be changed to a lower version if you expect to service Internet traffic from around the world
-      curvePreferences:   # below priority sequence can be changed
-        - X25519     # the most commonly used 128-bit
-        - CurveP256  # the next most commonly used 128-bit
-        - CurveP384  # 192-bit
-        - CurveP521  # 256-bit
-      sniStrict: true     # true if our own certificates should be enforced
+ options:
+   default:
+     minVersion: VersionTLS12    # change to a lower version if you expect to service Internet traffic from around the world
+     curvePreferences:   # below priority sequence can be changed
+       - X25519     # the most commonly used 128-bit
+       - CurveP256  # the next most commonly used 128-bit
+       - CurveP384  # 192-bit
+       - CurveP521  # 256-bit
+     sniStrict: true     # true if our own certificates should be enforced
+     cipherSuites:
+       - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+       - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+       - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+       - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+       - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
 #  certificates:
 #    - certFile: /etc/traefik/domain.cert
 #      keyFile: /etc/traefik/domain.key
@@ -148,11 +87,11 @@ tls:
 #        certFile: /etc/traefik/cert.crt
 #        keyFile: /etc/traefik/cert.key
 #### Alternatively, we can use an ACME generated default certificate.
-  stores:
-    default:
-      defaultGeneratedCert:
-        resolver: cloudflare
-        domain:
-          main: stilicho.ru
-          sans:
-            - "*.stilicho.ru"     
+stores:
+  default:
+    defaultGeneratedCert:
+      resolver: cloudflare
+      domain:
+        main: domain.ru
+        sans:
+          - "*.domain.ru"

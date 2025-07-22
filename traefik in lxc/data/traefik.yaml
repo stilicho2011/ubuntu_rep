@@ -2,67 +2,29 @@
 #-https://doc.traefik.io/traefik/contributing/data-collection/
 global:
   checkNewVersion: true
-  sendAnonymousUsage: false
+  sendAnonymousUsage: true
 # Enable traefik ui dashboard
 #-https://doc.traefik.io/traefik/operations/api/
 api:
   dashboard: true
   insecure: false   # access to http://traefikIP:8080/dashboard/ is disabled
   debug: true
+  disableDashboardAd: true
 entryPoints:
   web:
     address: ":80"
-    http:
-    #    middlewares:
-    #        - "crowdsec@file" # reference to a dynamic middleware for enabling crowdsec bouncer
-    #        - "cloudflarewarp@file" # reference to a dynamic middleware for enabling cloudflarewarp plugin
-    #        - "rate-limit@file" # reference to a dynamic middleware for enabling rate limiting per default
-      redirections: #https://doc.traefik.io/traefik/routing/entrypoints/#redirection
-          entryPoint:
-              to: websecure
-              scheme: https
+    #http:
+    #  redirections: #https://doc.traefik.io/traefik/routing/entrypoints/#redirection
+    #      entryPoint:
+    #          to: websecure
+    #          scheme: https
   websecure:
     address: ":443"
-    #http:
-    #    middlewares:
-    #        - "crowdsec@file" # reference to a dynamic middleware for enabling crowdsec bouncer
-    #        - "cloudflarewarp@file" # reference to a dynamic middleware for enabling cloudflarewarp plugin
-    #        - "rate-limit@file" # reference to a dynamic middleware for enabling rate limiting per default
-    #transport: # https://doc.traefik.io/traefik/routing/entrypoints/
-    #  respondingTimeouts:
-    #    readTimeout: 600s
-    #    idleTimeout: 600s
-    #    writeTimeout: 600s
   metrics:
     address: :8082
-    #
-    forwardedHeaders:
-        trustedIPs:
-            # Cloudflare (https://www.cloudflare.com/ips-v4)
-            - "173.245.48.0/20"
-            - "103.21.244.0/22"
-            - "103.22.200.0/22"
-            - "103.31.4.0/22"
-            - "141.101.64.0/18"
-            - "108.162.192.0/18"
-            - "190.93.240.0/20"
-            - "188.114.96.0/20"
-            - "197.234.240.0/22"
-            - "198.41.128.0/17"
-            - "162.158.0.0/15"
-            - "104.16.0.0/13"
-            - "104.24.0.0/14"
-            - "172.64.0.0/13"
-            - "131.0.72.0/22"
-            # Local IPs
-            - "127.0.0.1/32"
-            - "10.0.0.0/8"
-            - "192.168.0.0/16"
-            - "172.16.0.0/12"
-#
 metrics:
   prometheus:
-      entryPoint: metrics
+    entryPoint: metrics
 # https://doc.traefik.io/traefik/routing/services/#serverstransport_1
 # https://www.cloudflare.com/en-gb/learning/ssl/what-is-sni/
 serversTransport:
@@ -74,10 +36,10 @@ providers:
 #        endpoint: "unix:///var/run/docker.sock"
 #        exposedByDefault: false
 #-https://doc.traefik.io/traefik/providers/file/
-    file:
-        directory: /etc/traefik/dynamic
-        watch: true
-        #filename: /etc/traefik/config.yml # when a specific file is desired
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+    #filename: /etc/traefik/config.yml # when a specific file is desired
 #-https://doc.traefik.io/traefik/https/acme/
 certificatesResolvers:
   cloudflare:
@@ -122,16 +84,3 @@ experimental:
         cloudflarewarp:
             modulename: github.com/BetterCorp/cloudflarewarp
             version: v1.3.3
-# Only use secure ciphers - https://ssl-config.mozilla.org/#server=traefik&version=2.9&config=intermediate&guideline=5.6
-#tls:
-#  options:
-#    default:
-#      #sniStrict: true # prevents leaking default cert; see https://doc.traefik.io/traefik/https/tls/#cipher-suites
-#      minVersion: VersionTLS12
-#      cipherSuites:
-#        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
-#        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-#        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-#        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-#        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
-#        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
