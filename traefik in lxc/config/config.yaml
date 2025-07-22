@@ -28,22 +28,24 @@ http:
     radarr:
       loadBalancer:
         servers:
-          - url: "http://192.168.10.100:7878"            # Change IP Address to your radarr instance
+          - url: "http://192.168.x.x:7878" # Change IP Address to your radarr instance
         passHostHeader: true
 
 # https://doc.traefik.io/traefik/middlewares/http/overview/
   middlewares:
+# Middleware for Redirection
+# This can be used instead of global redirection
 #
     auth:
       basicAuth:
-        users:    # users and their MD5 hashed passwords, granted access to the traefik dashboard
-          - "admin:hashedpassword"
+        users:    # users and their MD5 hashed passwords, granted access to the traefik dashboard 
+          - "admin:hashedpassword" # openssl passwd -1 "hashedpassword"
 #
     https-redirect:
       redirectScheme:
         scheme: https
         permanent: true
-
+#
     default-headers:
       headers:
         frameDeny: true
@@ -56,6 +58,42 @@ http:
         customFrameOptionsValue: SAMEORIGIN
         customRequestHeaders:
           X-Forwarded-Proto: https
+#
+#    crowdsec:
+#      plugin:
+#        bouncer:
+#          enabled: true
+#          logLevel: INFO
+#          updateIntervalSeconds: 15
+#          updateMaxFailure: 0
+#          defaultDecisionSeconds: 15
+#          httpTimeoutSeconds: 10
+#          crowdsecMode: stream
+#          crowdsecAppsecEnabled: true
+#          crowdsecAppsecHost: crowdsec:7422
+#          crowdsecAppsecFailureBlock: true
+#          crowdsecAppsecUnreachableBlock: true
+#          crowdsecLapiKey: ____________________________ # Replace CrowdSec API key (docker exec crowdsec cscli bouncers add crowdsecBouncer)
+#          crowdsecLapiHost: crowdsec:8080
+#          crowdsecLapiScheme: http
+#          forwardedHeadersTrustedIPs:
+#            - 10.0.0.0/8
+#            - 172.16.0.0/12
+#            - 192.168.0.0/16                                                        
+#          clientTrustedIPs:
+#            - 10.0.0.0/8
+#            - 172.16.0.0/12
+#            - 192.168.0.0/16
+#
+    cloudflarewarp:
+      plugin:
+        cloudflarewarp:
+          disableDefault: false
+          trustip:
+            - "2400:cb00::/32"
+  #
+    gzip:
+      compress: {}
 
 # https://doc.traefik.io/traefik/https/tls/
 tls:

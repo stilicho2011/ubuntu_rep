@@ -66,7 +66,7 @@ accessLog:
     bufferingSize: 100 # number of log lines Traefik will keep in memory before writing them to the selected output
     fields:
         names:
-            StartUTC: drop # Write logs in Container Local Time instead of UTC. The time at which request processing started.
+            StartUTC: drop # Write logs in Container Local Time instead of UTC. The time at which request processing started. The time at which request processing started.
     filters:
         statusCodes:
             - "204-299"
