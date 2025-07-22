@@ -13,11 +13,11 @@ api:
 entryPoints:
   web:
     address: ":80"
-    #http:
+    http:
     #  redirections: #https://doc.traefik.io/traefik/routing/entrypoints/#redirection
-    #      entryPoint:
-    #          to: websecure
-    #          scheme: https
+          entryPoint:
+              to: websecure
+              scheme: https
   websecure:
     address: ":443"
   metrics:
@@ -32,10 +32,6 @@ serversTransport:
     insecureSkipVerify: true
 #-https://doc.traefik.io/traefik/providers/overview/
 providers:
-#-https://doc.traefik.io/traefik/providers/docker/
-#    docker:
-#        endpoint: "unix:///var/run/docker.sock"
-#        exposedByDefault: false
 #-https://doc.traefik.io/traefik/providers/file/
   file:
     directory: /etc/traefik/dynamic
