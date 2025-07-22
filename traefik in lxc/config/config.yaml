@@ -25,7 +25,8 @@ http:
         - "https"
       rule: "Host(`prod.stilicho.ru`)"
       middlewares:
-        - internal-https-hosts
+        - default-headers
+        - https-redirect
       tls:
         certResolver: cloudflare
         domains:
