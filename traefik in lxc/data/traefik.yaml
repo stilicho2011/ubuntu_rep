@@ -22,6 +22,7 @@ entryPoints:
     address: ":443"
   metrics:
     address: :8082
+#https://doc.traefik.io/traefik/observability/metrics/prometheus/
 metrics:
   prometheus:
     entryPoint: metrics
