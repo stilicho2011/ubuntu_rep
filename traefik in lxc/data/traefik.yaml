@@ -17,7 +17,7 @@ entryPoints:
     #        - "crowdsec@file" # reference to a dynamic middleware for enabling crowdsec bouncer
     #        - "cloudflarewarp@file" # reference to a dynamic middleware for enabling cloudflarewarp plugin
     #        - "rate-limit@file" # reference to a dynamic middleware for enabling rate limiting per default
-      redirections:
+      redirections: #https://doc.traefik.io/traefik/routing/entrypoints/#redirection
           entryPoint:
               to: websecure
               scheme: https
@@ -28,7 +28,7 @@ entryPoints:
     #        - "crowdsec@file" # reference to a dynamic middleware for enabling crowdsec bouncer
     #        - "cloudflarewarp@file" # reference to a dynamic middleware for enabling cloudflarewarp plugin
     #        - "rate-limit@file" # reference to a dynamic middleware for enabling rate limiting per default
-    #transport:
+    #transport: # https://doc.traefik.io/traefik/routing/entrypoints/
     #  respondingTimeouts:
     #    readTimeout: 600s
     #    idleTimeout: 600s
