@@ -14,10 +14,10 @@ entryPoints:
   web:
     address: ":80"
     http:
-    #  redirections: #https://doc.traefik.io/traefik/routing/entrypoints/#redirection
-          entryPoint:
-              to: websecure
-              scheme: https
+      redirections: #https://doc.traefik.io/traefik/routing/entrypoints/#redirection
+        entryPoint:
+            to: websecure
+            scheme: https
   websecure:
     address: ":443"
   metrics:
