@@ -6,7 +6,7 @@ services:
         expose:
             - 5432
         volumes:
-            - /home/pathto/docker/keycloak/database:/var/lib/postgresql/data
+            - /home/stilicho/docker/keycloak/database:/var/lib/postgresql/data
         environment:
             POSTGRES_DB: ${POSTGRES_DB}
             POSTGRES_USER: ${POSTGRES_USER}
@@ -35,8 +35,8 @@ services:
         command: start
         environment:
             KC_HOSTNAME: ${KEYCLOAK_HOSTNAME}
-            KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-            KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+            KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+            KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
             KC_DB: postgres
             KC_DB_URL: jdbc:postgresql://postgres/${POSTGRES_DB}
             KC_DB_USERNAME: ${POSTGRES_USER}
@@ -71,11 +71,11 @@ services:
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.keycloak.entrypoints=http"
-            - "traefik.http.routers.keycloak.rule=Host(`keycloak.domain.ru`)"
+            - "traefik.http.routers.keycloak.rule=Host(`keycloak.stilicho.ru`)"
             - "traefik.http.middlewares.keycloak-https-redirect.redirectscheme.scheme=https"
             - "traefik.http.routers.keycloak.middlewares=keycloak-https-redirect"
             - "traefik.http.routers.keycloak-secure.entrypoints=https"
-            - "traefik.http.routers.keycloak-secure.rule=Host(`keycloak.domain.ru`)"
+            - "traefik.http.routers.keycloak-secure.rule=Host(`keycloak.stilicho.ru`)"
             - "traefik.http.routers.keycloak-secure.tls=true"
             - "traefik.http.routers.keycloak-secure.service=keycloak"
             - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
