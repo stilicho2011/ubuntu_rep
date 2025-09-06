@@ -27,9 +27,7 @@ apt install apache2 -y
 3. Install dependencies:
 
 ```
-apt install php php-common libapache2-mod-php php-bz2 php-gd php-mysql \
-php-curl php-mbstring php-imagick php-zip php-common php-curl php-xml \
-php-json php-bcmath php-xml php-intl php-gmp zip unzip wget smbclient libmagickcore-6.q16-7-extra ffmpeg -y
+apt install php php-common libapache2-mod-php php-bz2 php-gd php-mysql php-curl php-mbstring php-imagick php-zip php-common php-curl php-xml php-json php-bcmath php-xml php-intl php-gmp zip unzip wget smbclient libmagickcore-6.q16-7-extra ffmpeg intel-media-va-driver-non-free ffmpeg va-driver-all,ocl-icd-libopencl1,intel-opencl-icd,vainfo,intel-gpu-tools -y
 ```
 
 4. Enable required Apache modules: 
