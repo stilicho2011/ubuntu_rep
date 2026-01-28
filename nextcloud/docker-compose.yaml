@@ -1,4 +1,4 @@
-9---
+---
 services:
   postgres:
     image: ${NEXTCLOUD_POSTGRES_IMAGE_TAG}
@@ -169,3 +169,4 @@ networks:
     external: true
   proxy:
     external: true 
+
