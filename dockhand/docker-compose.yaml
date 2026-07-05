@@ -1,0 +1,129 @@
+services:  # Секция описания сервисов (контейнеров)
+
+  dockhand:  # Имя сервиса (используется внутри compose)
+
+    image: fnsys/dockhand:latest  # Docker-образ (берётся из Docker Hub, тег latest = последняя версия)
+
+    container_name: dockhand  # Явное имя контейнера (удобно для управления и логов)
+
+    restart: unless-stopped  # Политика перезапуска (перезапускать всегда, кроме ручной остановки)
+
+    #ports:  # Проброс портов (сейчас отключён)
+
+    #  - 3000:3000  # Хост:контейнер (если включить — доступ напрямую без Traefik)
+
+    volumes:  # Монтирование томов (данные и сокеты)
+
+      - /var/run/docker.sock:/var/run/docker.sock  # Доступ к Docker API (контейнер управляет Docker ⚠️)
+
+      - /home/stilicho/docker/dockhand/data:/app/data  # Локальная папка для хранения данных приложения
+
+    networks:
+
+      proxy:  # Подключение к сети proxy (используется Traefik)
+
+    labels:
+
+      - "traefik.enable=true"  # Включаем Traefik для этого контейнера
+
+      # =========================
+
+      # HTTP ROUTER (порт 80)
+
+      # =========================
+
+      - "traefik.http.routers.dockhand.entrypoints=web"
+
+      # Traefik слушает входящий трафик на entrypoint "web" (обычно :80)
+
+      # сюда попадает http://dockhand.stilicho.ru
+
+      - "traefik.http.routers.dockhand.rule=Host(`dockhand.stilicho.ru`)"
+
+      # Правило: если Host совпадает — используем этот router
+
+      # Traefik сравнивает заголовок Host
+
+      - "traefik.http.routers.dockhand.middlewares=dockhand-https-redirect"
+
+      # Применяем middleware (редирект на HTTPS)
+
+      # ДО проксирования в контейнер
+
+      - "traefik.http.middlewares.dockhand-https-redirect.redirectscheme.scheme=https"
+
+      # Сам middleware:
+
+      # Traefik НЕ отправляет запрос в контейнер
+
+      # он сразу отвечает клиенту:
+
+      # 301 Redirect → https://dockhand.stilicho.ru
+
+      # =========================
+
+      # HTTPS ROUTER (порт 443)
+
+      # =========================
+
+      - "traefik.http.routers.dockhand-secure.entrypoints=websecure"
+
+      # Входящий HTTPS трафик (обычно порт 443)
+
+      - "traefik.http.routers.dockhand-secure.rule=Host(`dockhand.stilicho.ru`)"
+
+      # То же правило по домену
+
+      - "traefik.http.routers.dockhand-secure.tls=true"
+
+      # Включаем TLS:
+
+      # Traefik завершает SSL (TLS termination)
+
+      # расшифровывает HTTPS → дальше работает как HTTP
+
+      - "traefik.http.routers.dockhand-secure.service=dockhand"
+
+      # Указываем, в какой service отправлять трафик
+
+      # router → service связка
+
+      # =========================
+
+      # SERVICE (куда идёт трафик)
+
+      # =========================
+
+      - "traefik.http.services.dockhand.loadbalancer.server.port=3000"
+
+      # Ключевая строка:
+
+      # Traefik берёт IP контейнера в сети proxy
+
+      # и делает запрос:
+
+      # http://dockhand:3000 (внутри Docker-сети)
+
+      # НЕ через localhost и НЕ через ports
+
+      # =========================
+
+      # СЕТЬ
+
+      # =========================
+
+      - "traefik.docker.network=proxy"
+
+      # Указываем, в какой сети искать контейнер
+
+      # важно, если контейнер в нескольких сетях
+
+      # Traefik возьмёт IP именно из сети proxy
+
+# Описание сетей
+
+networks:
+
+  proxy:
+
+    external: true  # Сеть уже существует (создана отдельно, например для Traefik)
