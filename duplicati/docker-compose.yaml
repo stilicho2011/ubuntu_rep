@@ -1,0 +1,42 @@
+services:   # Раздел для описания всех сервисов Docker
+  duplicati:   # Имя сервиса
+    image: linuxserver/duplicati:latest   # Образ Docker, последняя версия Duplicati от LinuxServer
+    container_name: duplicati   # Имя контейнера в Docker
+    hostname: duplicati   # Имя хоста внутри контейнера
+    entrypoint:   # Переопределение точки входа контейнера
+      - /init   # Используется скрипт /init, предоставляемый образом LinuxServer
+    #ports:   # Публикация портов контейнера на хосте
+    #  - 8200:8200 # MGMT UI — интерфейс управления Duplicati будет доступен на порту 8200
+    #expose:   # Порт, который будет виден другим контейнерам в сети Docker
+    #  - 8200
+    environment:   # Переменные окружения для контейнера
+      - PUID=0   # UID пользователя внутри контейнера (0 = root, обычно для теста/администрирования)
+      - PGID=1000   # GID группы внутри контейнера (должен соответствовать вашей группе на хосте)
+      - TZ=Europe/Moscow   # Часовой пояс для контейнера
+      - SETTINGS_ENCRYPTION_KEY=B2NcaR2X6gwSGt # Ключ шифрования Duplicati (необходимо изменить!)
+      - DUPLICATI__WEBSERVICE_PASSWORD=adminadminadmin # Пароль для веб-интерфейса (изменить обязательно!)
+    restart: unless-stopped   # Контейнер автоматически перезапустится, если он упадет, кроме явной остановки
+    volumes:   # Монтирование директорий хоста в контейнер
+      - /home/stilicho/docker/duplicati/backups:/backups   # Директория для хранения бэкапов
+      - /home/stilicho/docker/duplicati/config:/config   # Конфигурация и настройки Duplicati
+      - /home/stilicho/docker:/source # Директория с исходными файлами для бэкапа (можно изменить)
+    networks:   # Сеть Docker, в которой будет работать контейнер
+      - proxy
+    labels:   # Метки для Traefik (обратного прокси)
+      - "traefik.enable=true"   # Включить обработку Traefik для этого контейнера
+      - "traefik.docker.network=proxy"   # Использовать сеть proxy для Traefik
+      - "traefik.http.routers.duplicati.entrypoints=web"   # Входной пункт Traefik (порт 80)
+      - "traefik.http.routers.duplicati.rule=Host(`duplicati.stilicho.ru`)"   # Домен, по которому доступен сервис
+      - "traefik.http.middlewares.duplicati-https-redirect.redirectscheme.scheme=https"   # Перенаправление HTTP -> HTTPS
+      - "traefik.http.routers.duplicati.middlewares=duplicati-https-redirect"   # Подключаем middleware для редиректа
+      - "traefik.http.routers.duplicati-secure.entrypoints=websecure"   # HTTPS маршрут Traefik (порт 443)
+      - "traefik.http.routers.duplicati-secure.rule=Host(`duplicati.stilicho.ru`)"   # Домен HTTPS
+      - "traefik.http.routers.duplicati-secure.tls=true"   # Включаем TLS
+      - "traefik.http.routers.duplicati-secure.tls.certresolver=cloudflare"   # Используем Cloudflare для генерации сертификата
+      - "traefik.http.routers.duplicati-secure.service=duplicati"   # Назначаем сервис для маршрута
+      - "traefik.http.services.duplicati.loadbalancer.server.port=8200"   # Порт сервиса внутри контейнера для Traefik
+      #- traefik.http.routers.duplicati.middlewares=ipwhitelist@file   # (закомментировано) пример ограничения по IP
+
+networks:   # Раздел для описания сетей
+    proxy:   # Сеть с именем proxy
+        external: true   # Используем внешнюю сеть Docker, созданную заранее (например для Traefik)
