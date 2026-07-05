@@ -1,0 +1,42 @@
+services: # Объявление всех сервисов (контейнеров), которыми управляет Docker Compose
+
+  zerobyte: # Имя сервиса (логическое имя контейнера)
+    image: ghcr.io/nicotsx/zerobyte:latest # Образ контейнера с фиксированной версией (лучше, чем latest)
+    container_name: zerobyte # Явное имя контейнера для удобства управления (docker ps, логи и т.д.)
+    restart: unless-stopped # Автоматический рестарт контейнера при падении (кроме ручной остановки)
+    cap_add:
+      - SYS_ADMIN # Добавляет расширенные привилегии (нужно для FUSE и работы с удалёнными шарами). Если бекапите локальные данные, закомментируйте строку
+      - SYS_PTRACE # Позволяет отслеживать процессы (может использоваться для отладки или внутренней логики) Если бекапите локальные данные, закомментируйте строку
+    #ports:
+    #  - "4096:4096" # Проброс порта наружу (не нужен, если используется Traefik)
+    devices:
+      - /dev/fuse:/dev/fuse # Проброс FUSE-устройства для работы с rclone/монтированием. Если бекапите локальные данные, закомментируйте строку
+    environment: # Переменные окружения для настройки приложения
+      - TZ=Europe/Moscow # Таймзона контейнера (важно для расписаний и логов)
+      - BASE_URL=https://zerobyte.stilicho.ru # Публичный URL доступа к Zerobyte (используется в UI и OAuth)
+      - APP_SECRET=240728b5d3d99fc4c233964e9836a2acf341fae4f72544d1a2051acc1339923d # Секрет приложения (обязательно уникальный, для безопасности)
+    security_opt: # Ослабление механизмов безопасности контейнера
+      - seccomp:unconfined # Отключает seccomp профиль (разрешает больше системных вызовов) Если бекапите локальные данные, закомментируйте строку
+      - apparmor:unconfined # Отключает AppArmor профиль (снимает ограничения доступа) Если бекапите локальные данные, закомментируйте строку
+    volumes: # Монтирование директорий (данные и доступ к файлам)
+      - /etc/localtime:/etc/localtime:ro # Синхронизация времени с хостом (read-only)
+      - /home/stilicho/docker/zerobyte:/var/lib/zerobyte # Данные Zerobyte (конфиги, база, состояние)
+      - /home/stilicho/docker:/mydata # Директория с данными для бэкапа (источник volumes)
+    networks:
+      proxy: # Подключение к сети proxy (для работы с Traefik)
+    labels: # Метки для автоматической конфигурации Traefik
+      - "traefik.enable=true" # Включает обработку контейнера Traefik
+      - "traefik.http.routers.zerobyte.entrypoints=web" # HTTP вход (порт 80)
+      - "traefik.http.routers.zerobyte.rule=Host(`zerobyte.stilicho.ru`)" # Маршрутизация по домену
+      - "traefik.http.middlewares.zerobyte-https-redirect.redirectscheme.scheme=https" # Редирект HTTP → HTTPS
+      - "traefik.http.routers.zerobyte.middlewares=zerobyte-https-redirect" # Применение редиректа
+      - "traefik.http.routers.zerobyte-secure.entrypoints=websecure" # HTTPS вход (порт 443)
+      - "traefik.http.routers.zerobyte-secure.rule=Host(`zerobyte.stilicho.ru`)" # HTTPS правило маршрутизации
+      - "traefik.http.routers.zerobyte-secure.tls=true" # Включение TLS (HTTPS)
+      - "traefik.http.routers.zerobyte-secure.service=zerobyte" # Привязка к сервису
+      - "traefik.http.services.zerobyte.loadbalancer.server.port=4096" # Внутренний порт приложения в контейнере
+      - "traefik.docker.network=proxy" # Указание сети для Traefik
+
+networks: # Объявление сетей
+  proxy: # Имя сети
+    external: true # Сеть уже создана (Docker Compose не будет её создавать)
