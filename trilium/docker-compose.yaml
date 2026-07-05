@@ -1,0 +1,45 @@
+services:
+  trilium:                                # Определяем сервис с именем "trilium"
+    container_name: trilium               # Имя контейнера в Docker (для удобства)
+    image: triliumnext/trilium:latest     # Используем официальный образ Trilium Next (последняя версия)
+    restart: always                       # Контейнер будет автоматически перезапускаться при сбое или перезагрузке Docker
+    environment:                          # Переменные окружения, передаваемые внутрь контейнера
+      TRILIUM_NETWORK_TRUSTEDREVERSEPROXY: 172.18.0.0/16 # Доверенная сеть для обратного прокси
+      TRILIUM_DATA_DIR: /home/node/trilium-data   # Путь к директории, где Trilium хранит свои данные внутри контейнера
+      TZ: ${TZ}                                   # Устанавливаем часовой пояс из переменной окружения (обычно задан в .env)
+      TRILIUM_MULTIFACTORAUTHENTICATION_OAUTHBASEURL: "https://trilium.domain.ru"  
+        # Базовый URL для обратных вызовов OIDC (Trilium должен знать свой публичный адрес)
+      TRILIUM_MULTIFACTORAUTHENTICATION_OAUTHCLIENTID: ${TRILIUM_CLIENT_ID}  
+        # ID клиента OAuth (берётся из .env или секрета)
+      TRILIUM_MULTIFACTORAUTHENTICATION_OAUTHCLIENTSECRET: ${TRILIUM_CLIENT_SECRET}  
+        # Секрет клиента OAuth (также из .env)
+      TRILIUM_MULTIFACTORAUTHENTICATION_OAUTHISSUERBASEURL: "https://auth.domain.ru/application/o/trilium"  
+        # Адрес Identity Provider (в данном случае Authentik)
+      TRILIUM_MULTIFACTORAUTHENTICATION_OAUTHISSUERNAME: "Authentik"  
+        # Название провайдера аутентификации, отображаемое в интерфейсе Trilium
+      TRILIUM_MULTIFACTORAUTHENTICATION_OAUTHISSUERICON: "https://cdn.jsdelivr.net/gh/selfhst/icons/svg/authentik.svg"  
+        # Иконка провайдера аутентификации (красивая мелочь для UI)
+    volumes:                              # Монтируем локальные каталоги в контейнер
+      - /home/user/docker/trilium:/home/node/trilium-data  
+        # Основной том для данных (заменяет встроенную директорию Trilium)
+      # Если надо, чтобы контейнер наследовал системный часовой пояс, раскомментируй:
+      # - /etc/localtime:/etc/localtime:ro
+        # Монтирование локального времени системы внутрь контейнера (только для чтения)
+    networks:
+      proxy:                              # Подключаем контейнер к внешней сети "proxy" (используется Traefik)
+    labels:                               # Метки для интеграции с Traefik (обратный прокси)
+      - "traefik.enable=true"                                      # Включаем обработку контейнера Traefik
+      - "traefik.http.routers.trilium.entrypoints=web"             # Определяем HTTP-вход (порт 80)
+      - "traefik.http.routers.trilium.rule=Host(`trilium.domain.ru`)" # Трафик на этот домен будет направляться в данный контейнер
+      - "traefik.http.middlewares.trilium-https-redirect.redirectscheme.scheme=https" # Middleware для редиректа с HTTP на HTTPS
+      - "traefik.http.routers.trilium.middlewares=trilium-https-redirect" # Применяем middleware редиректа к HTTP-маршруту
+      - "traefik.http.routers.trilium-secure.entrypoints=websecure" # Определяем HTTPS-вход (порт 443)
+      - "traefik.http.routers.trilium-secure.rule=Host(`trilium.domain.ru`)" # HTTPS-маршрут для того же домена
+      - "traefik.http.routers.trilium-secure.tls=true" # Включаем TLS (HTTPS)
+      - "traefik.http.routers.trilium-secure.service=trilium" # Привязываем HTTPS-маршрут к сервису Trilium
+      - "traefik.http.services.trilium.loadbalancer.server.port=8080" # Указываем внутренний порт, на котором Trilium слушает в контейнере
+      - "traefik.docker.network=proxy" # Указываем, что Traefik должен искать контейнер в сети "proxy"
+
+networks:
+  proxy:                                  # Определение внешней сети для взаимодействия с Traefik
+    external: true                        # Сеть уже создана ранее (не создавать заново)
