@@ -1,0 +1,73 @@
+services:                               # Секция описания сервисов (контейнеров)
+
+  booklore:                             # Имя сервиса BookLore
+    image: grimmory/grimmory:latest     # Docker-образ BookLore из Docker Hub (тег latest)
+    # image: ghcr.io/booklore-app/booklore:latest
+    # Альтернативный образ из GitHub Container Registry (закомментирован)
+    container_name: grimmory            # Явное имя контейнера в Docker
+    environment:                        # Переменные окружения контейнера
+      - USER_ID=${APP_USER_ID}          # UID пользователя для работы контейнера (права на файлы)
+      - GROUP_ID=${APP_GROUP_ID}        # GID группы для файлов и каталогов
+      - TZ=${TZ}                        # Часовой пояс контейнера
+      - DATABASE_URL=${DATABASE_URL}    # URL подключения к базе данных MariaDB
+      - DATABASE_USERNAME=${DB_USER}    # Имя пользователя базы данных
+      - DATABASE_PASSWORD=${DB_PASSWORD} # Пароль пользователя базы данных
+      - BOOKLORE_PORT=${BOOKLORE_PORT}  # Внутренний порт BookLore
+    depends_on:                         # Зависимости сервиса
+      mariadb:                          # Зависимость от сервиса mariadb
+        condition: service_healthy      # Запуск только после успешного healthcheck БД
+    ports:
+      - "${BOOKLORE_PORT}:${BOOKLORE_PORT}"   # Проброс порта: host → container (обычно не нужен при использовании Traefik)
+    volumes:
+      - ./data:/app/data                # Данные приложения BookLore
+      - ./books:/books                  # Каталог с библиотекой книг
+      - ./bookdrop:/bookdrop            # Папка для автоматического импорта книг
+    healthcheck:                        # Проверка работоспособности контейнера
+      test: wget -q -O - http://localhost:${BOOKLORE_PORT}/api/v1/healthcheck
+      # HTTP-запрос к встроенному healthcheck API BookLore
+      interval: 60s                     # Интервал между проверками
+      retries: 5                        # Количество попыток до признания контейнера unhealthy
+      start_period: 60s                 # Время ожидания перед началом проверок
+      timeout: 10s                      # Таймаут одной проверки
+    restart: unless-stopped             # Автоперезапуск контейнера (кроме ручной остановки)
+    networks:
+      proxy:                            # Подключение к внешней сети proxy (Traefik)
+    labels:                             # Метки Docker для интеграции с Traefik
+      - "traefik.enable=true"           # Включаем обработку контейнера Traefik
+      - "traefik.http.routers.grimmory.entrypoints=web" # HTTP-вход (порт 80)
+      - "traefik.http.routers.grimmory.rule=Host(`grimmory.stilicho.ru`)" # Направляем трафик с домена booklore.stilicho.ru в этот контейнер
+      - "traefik.http.middlewares.grimmory-https-redirect.redirectscheme.scheme=https" # Middleware для редиректа HTTP → HTTPS
+      - "traefik.http.routers.grimmory.middlewares=grimmory-https-redirect" # Применяем middleware редиректа к HTTP-маршруту
+      - "traefik.http.routers.grimmory-secure.entrypoints=websecure" # HTTPS-вход (порт 443)
+      - "traefik.http.routers.grimmory-secure.rule=Host(`grimmory.stilicho.ru`)" # HTTPS-маршрут для того же домена
+      - "traefik.http.routers.grimmory-secure.tls=true" # Включаем TLS (HTTPS)
+      - "traefik.http.routers.grimmory-secure.service=grimmory"  # Привязываем HTTPS-роутер к сервису booklore
+      - "traefik.http.services.grimmory.loadbalancer.server.port=6060" # Внутренний порт BookLore внутри контейнера
+      - "traefik.docker.network=proxy" # Указываем Traefik, в какой Docker-сети искать контейнер
+#
+  mariadb:                              # Сервис базы данных MariaDB
+    image: lscr.io/linuxserver/mariadb:11.4.5
+    # Образ MariaDB от LinuxServer.io (стабильный и удобный)
+    container_name: mariadb             # Явное имя контейнера
+    environment:                        # Переменные окружения MariaDB
+      - PUID=${DB_USER_ID}              # UID владельца файлов БД
+      - PGID=${DB_GROUP_ID}             # GID владельца файлов БД
+      - TZ=${TZ}                        # Часовой пояс
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}       # Пароль root-пользователя БД
+      - MYSQL_DATABASE=${MYSQL_DATABASE}       # Имя базы данных, создаваемой при первом запуске
+      - MYSQL_USER=${DB_USER}       # Пользователь БД
+      - MYSQL_PASSWORD=${DB_PASSWORD}    # Пароль пользователя БД
+    volumes:
+      - ./mariadb/config:/config        # Каталог с данными и конфигурацией MariaDB
+    restart: unless-stopped             # Автоперезапуск контейнера
+    healthcheck:                        # Проверка доступности БД
+      test: [ "CMD", "mariadb-admin", "ping", "-h", "localhost" ]
+      interval: 5s                      # Интервал проверки
+      timeout: 5s                       # Таймаут проверки
+      retries: 10                       # Количество попыток
+    networks:
+      proxy:                            # Подключение к сети proxy (Traefik)
+
+networks:
+  proxy:                                # Определение сети proxy
+    external: true                      # Сеть уже существует и не создаётся Docker самостоятельно
