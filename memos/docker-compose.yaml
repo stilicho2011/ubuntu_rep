@@ -1,0 +1,30 @@
+services:
+  memos:
+    image: neosmemo/memos:stable
+    container_name: memos
+    #ports:
+    #  - "5230:5230"
+    volumes:
+      - /home/путь/до/memos:/var/opt/memos
+    environment:
+      - MEMOS_MODE=prod
+      - MEMOS_PORT=5230
+    restart: unless-stopped
+    networks:
+      proxy:                              # Подключаем контейнер к внешней сети "proxy" (используется Traefik)
+    labels:                               # Метки для интеграции с Traefik (обратный прокси)
+      - "traefik.enable=true"                                      # Включаем обработку контейнера Traefik
+      - "traefik.http.routers.memos.entrypoints=web"             # Определяем HTTP-вход (порт 80)
+      - "traefik.http.routers.memos.rule=Host(`memos.домен.ru`)"  # Трафик на этот домен будет направляться в данный контейнер   
+      - "traefik.http.middlewares.memos-https-redirect.redirectscheme.scheme=https"         # Middleware для редиректа с HTTP на HTTPS
+      - "traefik.http.routers.memos.middlewares=memos-https-redirect"          # Применяем middleware редиректа к HTTP-маршруту
+      - "traefik.http.routers.memos-secure.entrypoints=websecure"          # Определяем HTTPS-вход (порт 443)
+      - "traefik.http.routers.memos-secure.rule=Host(`memos.домен.ru`)"         # HTTPS-маршрут для того же домена 
+      - "traefik.http.routers.memos-secure.tls=true"          # Включаем TLS (HTTPS)
+      - "traefik.http.routers.memos-secure.service=memos"     # Привязываем HTTPS-маршрут к сервису memos     
+      - "traefik.http.services.memos.loadbalancer.server.port=5230"          # Указываем внутренний порт, на котором memos слушает в контейнере
+      - "traefik.docker.network=proxy"          # Указываем, что Traefik должен искать контейнер в сети "proxy"                          
+   
+networks:
+  proxy:                                  # Определение внешней сети для взаимодействия с Traefik
+    external: true                        # Сеть уже создана ранее (не создавать заново)        
