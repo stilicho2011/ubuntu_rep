@@ -3,7 +3,7 @@
 # please adjust the below traefik container name to send the USR1 signal for log rotation
 
 compress
-/home/alaricus/docker/traefik/logs/*.log {
+/path/to/traefik/logs/*.log {
     daily
     maxsize 50M
     rotate 14
