@@ -1,3 +1,4 @@
+
 # place this example code at /etc/logrotate.d/traefik on your docker host server
 # please adjust the custom file path below, where your traefik logs are stored
 # please adjust the below traefik container name to send the USR1 signal for log rotation
